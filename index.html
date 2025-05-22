@@ -1,6 +1,6 @@
 <!--
   GenAI Media Showdown – Images + Videos (reference centred)
-  ==========================================================
+  =========================================================
   Drop this file at the root of a GitHub repository (e.g. main branch)
   and enable GitHub Pages → Deploy from branch.
   Put your media under an assets/ folder (or anywhere you like) and
@@ -72,6 +72,17 @@ main{max-width:1400px;margin:0 auto;padding:2rem}
 }
 .stat-number{font-size:1.5rem;font-weight:700;color:var(--accent)}
 .stat-label{font-size:.8rem;color:var(--fg-muted);text-transform:uppercase}
+
+/* ───────── Model score table ───────── */
+.model-scores{margin-bottom:2rem;overflow-x:auto}
+.model-score-table{width:100%;border-collapse:collapse;min-width:600px}
+.model-score-table th,.model-score-table td{
+  padding:.5rem .75rem;border:1px solid var(--border);text-align:center;
+  font-size:.85rem
+}
+.model-score-table th{background:var(--surface)}
+.model-score-table tbody tr:nth-child(even){background:var(--bg-light)}
+.model-score-table .avg-cell{font-weight:700;color:var(--accent)}
 
 section{margin-bottom:4rem;opacity:0;transform:translateY(20px);
          animation:fadeInUp .6s ease forwards}
@@ -195,6 +206,7 @@ nav a:focus,figure:focus,#searchInput:focus{
 </header>
 
 <main>
+  <!-- ───── Top-level statistics ───── -->
   <div class="stats">
     <div class="stat">
       <div class="stat-number" id="totalPrompts">0</div>
@@ -209,6 +221,9 @@ nav a:focus,figure:focus,#searchInput:focus{
       <div class="stat-label">Models</div>
     </div>
   </div>
+
+  <!-- ───── Per-model score table ───── -->
+  <div class="model-scores" id="modelScores"></div>
 
   <div id="content"></div>
 
@@ -288,6 +303,22 @@ const examples = [
     ],
   },
 ];
+
+/*───────────────────────────────────────────
+ 1a) OPTIONAL: MODEL SCORE DATA
+      Fill in (out of 10) to have values appear, otherwise "—" will be shown
+───────────────────────────────────────────*/
+const MODEL_SCORE_DATA = {
+  "Veo 3 – v1":       {instruction:9, consistency:8, realism:9, animation:8, creativity:8},
+  "Veo 3 – v2":       {instruction:9, consistency:8, realism:8, animation:8, creativity:8},
+  "Veo 2":            {instruction:8, consistency:7, realism:8, animation:7, creativity:7},
+  "HunYuan":          {instruction:7, consistency:7, realism:7, animation:6, creativity:7},
+  "Wan 2.1":          {instruction:6, consistency:6, realism:6, animation:5, creativity:6},
+  "Kling 1.6":        {instruction:6, consistency:5, realism:6, animation:5, creativity:6},
+  "Kling 2.0":        {instruction:7, consistency:6, realism:7, animation:6, creativity:7},
+  "FramePack + HunYuan": {instruction:7, consistency:7, realism:7, animation:7, creativity:8}
+};
+
 /*───────────────────────────────────────────
  2)  APPLICATION CODE
 ───────────────────────────────────────────*/
@@ -307,6 +338,7 @@ class MediaShowdown{
     this.listeners();
     this.updateStats();
     this.buildNav();
+    this.buildScoreTable();   //  <─ NEW
     this.buildContent();
   }
 
@@ -346,6 +378,51 @@ class MediaShowdown{
     document.getElementById('totalPrompts').textContent=totalPrompts;
     document.getElementById('totalMedia').textContent=totalMedia;
     document.getElementById('totalModels').textContent=models.size;
+  }
+
+  /* ── Per-model score table ── */
+  buildScoreTable(){
+    const container=document.getElementById('modelScores');
+    container.innerHTML='';
+
+    // Collect unique models excluding reference images
+    const modelSet=new Set();
+    this.examples.forEach(ex=>ex.images.forEach(img=>{
+      if(!/reference/i.test(img.model)) modelSet.add(img.model);
+    }));
+
+    const categories=["Instruction","Consistency","Realism","Animation","Creativity"];
+
+    const table=document.createElement('table');
+    table.className='model-score-table';
+
+    // Header
+    const thead=document.createElement('thead');
+    const hrow=document.createElement('tr');
+    hrow.innerHTML='<th>Model</th>'+
+      categories.map(c=>`<th>${c}</th>`).join('')+
+      '<th>Avg.</th>';
+    thead.appendChild(hrow);table.appendChild(thead);
+
+    // Body
+    const tbody=document.createElement('tbody');
+    modelSet.forEach(model=>{
+      const data=MODEL_SCORE_DATA[model]||{};
+      const row=document.createElement('tr');
+      let sum=0,count=0;
+      row.innerHTML=`<td style="text-align:left">${model}</td>`+
+        categories.map(cat=>{
+          const key=cat.toLowerCase().replace(/\s+/g,'');
+          const val=data[key];
+          if(typeof val==='number') {sum+=val;count++;}
+          return `<td>${typeof val==='number'?val:'—'}</td>`;
+        }).join('');
+      const avg=count? (sum/count).toFixed(1):'—';
+      row.innerHTML+=`<td class="avg-cell">${avg}</td>`;
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
   }
 
   /* ── Search ── */
@@ -491,4 +568,3 @@ document.addEventListener('DOMContentLoaded',()=>new MediaShowdown());
 </script>
 </body>
 </html>
-

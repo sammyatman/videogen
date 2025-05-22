@@ -504,34 +504,53 @@
        "assets/"), then reference the relative path in `src`.
     ============================================================= */
 
-    const examples = [
+        const examples = [
       {
-        prompt: "A robot cat sitting on a stack of pancakes",
+        prompt: "Realistic woman in mid 40s walking through a city street in New York",
         images: [
-          { model: "OpenAI DALL-E 3", src: "assets/robot_cat/dalle3.jpg" },
-          { model: "Midjourney v6", src: "assets/robot_cat/midjourney.jpg" },
-          { model: "Stable Diffusion XL", src: "assets/robot_cat/sdxl.jpg" },
-          { model: "Adobe Firefly", src: "assets/robot_cat/firefly.jpg" },
+          { model: "Veo 3", src: "examples/woman_40_walking_nyc/veo3.mp4" },
+          { model: "Veo 2", src: "examples/woman_40_walking_nyc/veo2.mp4" },
+          { model: "HunYuan", src: "examples/woman_40_walking_nyc/hunyuan.mp4" },
+          { model: "Wan 2.1", src: "examples/woman_40_walking_nyc/wan21.mp4" },
+          { model: "Kling 1.6", src: "examples/woman_40_walking_nyc/kling16.mp4" },
+          { model: "Kling 2.0", src: "examples/woman_40_walking_nyc/kling20.mp4" },
+          { model: "FramePack + HunYuan", src: "examples/woman_40_walking_nyc/framepack_hunyuan.mp4" },
         ],
       },
       {
-        prompt: "A photorealistic portrait of an ancient astronaut riding a dinosaur in a cyberpunk city",
+        prompt: "A nature scene with a blue hummingbird moving towards a flower then flying away",
         images: [
-          { model: "OpenAI DALL-E 3", src: "assets/astronaut/dalle3.jpg" },
-          { model: "Midjourney v6", src: "assets/astronaut/midjourney.jpg" },
-          { model: "Leonardo AI", src: "assets/astronaut/leonardo.jpg" },
-          { model: "Flux.1 Pro", src: "assets/astronaut/flux.jpg" },
+          { model: "Veo 3", src: "examples/humming_bird_flying/veo3.mp4" },
+          { model: "Veo 2", src: "examples/humming_bird_flying/veo2.mp4" },
+          { model: "HunYuan", src: "examples/humming_bird_flying/hunyuan.mp4" },
+          { model: "Wan 2.1", src: "examples/humming_bird_flying/wan21.mp4" },
+          { model: "Kling 1.6", src: "examples/humming_bird_flying/kling16.mp4" },
+          { model: "Kling 2.0", src: "examples/humming_bird_flying/kling20.mp4" },
+          { model: "FramePack + HunYuan", src: "examples/humming_bird_flying/framepack_hunyuan.mp4" },
         ],
       },
       {
-        prompt: "A serene Japanese garden with cherry blossoms reflecting in a koi pond at sunset",
+        prompt: "A first person view of a home chef chopping onions",
         images: [
-          { model: "OpenAI DALL-E 3", src: "assets/garden/dalle3.jpg" },
-          { model: "Midjourney v6", src: "assets/garden/midjourney.jpg" },
-          { model: "Stable Diffusion XL", src: "assets/garden/sdxl.jpg" },
+          { model: "Veo 3", src: "examples/onions/veo3.mp4" },
+          { model: "Veo 2", src: "examples/onions/veo2.mp4" },
+          { model: "HunYuan", src: "examples/onions/hunyuan.mp4" },
+          { model: "Wan 2.1", src: "examples/onions/wan21.mp4" },
+          { model: "Kling 1.6", src: "examples/onions/kling16.mp4" },
+          { model: "Kling 2.0", src: "examples/onions/kling20.mp4" },
+          { model: "FramePack + HunYuan", src: "examples/onions/framepack_hunyuan.mp4" },
         ],
       },
-      // 👉 TODO: Add your own examples here 👈
+      {
+        prompt: "Anime red haired girl dodging arrow flying towards her - arrow narrowly missing red haired main character, arrow flies from left to right leaving her unharmed but shocked",
+        images: [
+          { model: "Reference Image", src: "examples/anime/original.jpeg" },
+          { model: "Reference 1", src: "examples/anime/ref1.png" },
+          { model: "Reference 2", src: "examples/anime/ref2.png" },
+          { model: "Veo 3 - Version 1", src: "examples/anime/veo3_1.mp4" },
+          { model: "Veo 3 - Version 2", src: "examples/anime/veo3_2.mp4" },
+        ],
+      },
     ];
 
     /* =============================================================

@@ -1,19 +1,9 @@
-<!--
-  GenAI Image Showdown – Enhanced Template
-  =========================================
-  Drop this file at the root of a GitHub repository (e.g. `main` branch)
-  and enable **GitHub Pages → Deploy from branch** in the repo settings.
-  Place your images under an `assets/` folder (or anywhere you like) and
-  fill in the `examples` array below with your own prompts, model names
-  and image paths. Everything lives in one file so you can copy‑paste or
-  tweak quickly – no build step required.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GenAI Image Showdown – Enhanced</title>
+  <title>GenAI Media Showdown – Images & Videos</title>
   <style>
     :root {
       --bg: #0f0f0f;
@@ -238,14 +228,14 @@
       border-color: var(--accent);
     }
 
-    .image-container {
+    .media-container {
       position: relative;
       aspect-ratio: 1;
       overflow: hidden;
       background: var(--bg-light);
     }
 
-    figure img {
+    figure img, figure video {
       display: block;
       width: 100%;
       height: 100%;
@@ -253,8 +243,49 @@
       transition: all 0.3s ease;
     }
 
-    figure:hover img {
+    figure:hover img, figure:hover video {
       transform: scale(1.05);
+    }
+
+    /* Video-specific styles */
+    figure video {
+      cursor: pointer;
+    }
+
+    .video-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    figure:hover .video-overlay {
+      background: rgba(59, 130, 246, 0.8);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .media-type-badge {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 600;
     }
 
     .loading-placeholder {
@@ -333,11 +364,15 @@
       to { transform: scale(1); }
     }
 
-    .modal img {
+    .modal img, .modal video {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
       border-radius: 12px;
+    }
+
+    .modal video {
+      background: black;
     }
 
     .modal-caption {
@@ -441,7 +476,7 @@
 <body>
   <header>
     <div class="header-content">
-      <h1>GenAI Image Showdown</h1>
+      <h1>GenAI Media Showdown</h1>
       
       <div class="search-container">
         <div class="search-icon">🔍</div>
@@ -464,8 +499,8 @@
         <div class="stat-label">Prompts</div>
       </div>
       <div class="stat">
-        <div class="stat-number" id="totalImages">0</div>
-        <div class="stat-label">Images</div>
+        <div class="stat-number" id="totalMedia">0</div>
+        <div class="stat-label">Media Files</div>
       </div>
       <div class="stat">
         <div class="stat-number" id="totalModels">0</div>
@@ -484,27 +519,17 @@
     </div>
   </main>
 
-  <!-- Modal for image viewing -->
-  <div id="imageModal" class="modal" role="dialog" aria-hidden="true">
+  <!-- Modal for media viewing -->
+  <div id="mediaModal" class="modal" role="dialog" aria-hidden="true">
     <div class="modal-content">
       <span class="close" aria-label="Close modal">&times;</span>
-      <img id="modalImage" alt="" />
+      <div id="modalMediaContainer"></div>
       <div class="modal-caption" id="modalCaption"></div>
     </div>
   </div>
 
   <script>
-    /* =============================================================
-       1) EDIT YOUR DATA BELOW
-       ----------------------------------------------------------------
-       Each prompt gets its own object with:
-         - prompt  : string (what you asked the models)
-         - images  : array of { model: string, src: string }
-       Place the matching JPEG/PNG files in your repo (e.g. under
-       "assets/"), then reference the relative path in `src`.
-    ============================================================= */
-
-        const examples = [
+    const examples = [
       {
         prompt: "Realistic woman in mid 40s walking through a city street in New York",
         images: [
@@ -530,39 +555,23 @@
         ],
       },
       {
-        prompt: "A first person view of a home chef chopping onions",
+        prompt: "Mixed media comparison - images and videos",
         images: [
-          { model: "Veo 3", src: "examples/onions/veo3.mp4" },
-          { model: "Veo 2", src: "examples/onions/veo2.mp4" },
-          { model: "HunYuan", src: "examples/onions/hunyuan.mp4" },
-          { model: "Wan 2.1", src: "examples/onions/wan21.mp4" },
-          { model: "Kling 1.6", src: "examples/onions/kling16.mp4" },
-          { model: "Kling 2.0", src: "examples/onions/kling20.mp4" },
-          { model: "FramePack + HunYuan", src: "examples/onions/framepack_hunyuan.mp4" },
-        ],
-      },
-      {
-        prompt: "Anime red haired girl dodging arrow flying towards her - arrow narrowly missing red haired main character, arrow flies from left to right leaving her unharmed but shocked",
-        images: [
-          { model: "Reference Image", src: "examples/anime/original.jpeg" },
-          { model: "Reference 1", src: "examples/anime/ref1.png" },
-          { model: "Reference 2", src: "examples/anime/ref2.png" },
-          { model: "Veo 3 - Version 1", src: "examples/anime/veo3_1.mp4" },
-          { model: "Veo 3 - Version 2", src: "examples/anime/veo3_2.mp4" },
+          { model: "DALL-E 3", src: "examples/mixed/dalle3.jpg" },
+          { model: "Midjourney", src: "examples/mixed/midjourney.png" },
+          { model: "Stable Diffusion", src: "examples/mixed/sd.jpg" },
+          { model: "Veo 3", src: "examples/mixed/veo3.mp4" },
+          { model: "Kling", src: "examples/mixed/kling.mp4" },
         ],
       },
     ];
 
-    /* =============================================================
-       2) APPLICATION CODE (no changes needed unless customizing)
-    ============================================================= */
-
-    class ImageShowdown {
+    class MediaShowdown {
       constructor() {
         this.examples = examples;
         this.filteredExamples = [...examples];
-        this.modal = document.getElementById('imageModal');
-        this.modalImage = document.getElementById('modalImage');
+        this.modal = document.getElementById('mediaModal');
+        this.modalMediaContainer = document.getElementById('modalMediaContainer');
         this.modalCaption = document.getElementById('modalCaption');
         
         this.init();
@@ -575,12 +584,19 @@
         this.buildContent();
       }
 
+      isVideoFile(src) {
+        const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv'];
+        return videoExtensions.some(ext => src.toLowerCase().endsWith(ext));
+      }
+
+      getMediaType(src) {
+        return this.isVideoFile(src) ? 'video' : 'image';
+      }
+
       setupEventListeners() {
-        // Search functionality
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
 
-        // Modal functionality
         const closeBtn = document.querySelector('.close');
         closeBtn.addEventListener('click', () => this.closeModal());
         
@@ -588,15 +604,13 @@
           if (e.target === this.modal) this.closeModal();
         });
 
-        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') this.closeModal();
         });
 
-        // Handle image loading errors
         document.addEventListener('error', (e) => {
-          if (e.target.tagName === 'IMG') {
-            this.handleImageError(e.target);
+          if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+            this.handleMediaError(e.target);
           }
         }, true);
       }
@@ -607,14 +621,14 @@
 
       updateStats() {
         const totalPrompts = this.examples.length;
-        const totalImages = this.examples.reduce((sum, ex) => sum + ex.images.length, 0);
+        const totalMedia = this.examples.reduce((sum, ex) => sum + ex.images.length, 0);
         const allModels = new Set();
         this.examples.forEach(ex => {
           ex.images.forEach(img => allModels.add(img.model));
         });
 
         document.getElementById('totalPrompts').textContent = totalPrompts;
-        document.getElementById('totalImages').textContent = totalImages;
+        document.getElementById('totalMedia').textContent = totalMedia;
         document.getElementById('totalModels').textContent = allModels.size;
       }
 
@@ -638,7 +652,7 @@
       updateNavigation() {
         const navLinks = document.querySelectorAll('nav a');
         navLinks.forEach(link => {
-          const href = link.getAttribute('href').substring(1); // Remove #
+          const href = link.getAttribute('href').substring(1);
           const isVisible = this.filteredExamples.some(ex => this.slugify(ex.prompt) === href);
           link.classList.toggle('hidden', !isVisible);
         });
@@ -683,44 +697,76 @@
           const grid = document.createElement("div");
           grid.className = "grid";
 
-          ex.images.forEach((img) => {
+          ex.images.forEach((media) => {
             const fig = document.createElement("figure");
             fig.setAttribute('tabindex', '0');
             fig.setAttribute('role', 'button');
-            fig.setAttribute('aria-label', `View ${img.model} image for: ${ex.prompt}`);
+            fig.setAttribute('aria-label', `View ${media.model} ${this.getMediaType(media.src)} for: ${ex.prompt}`);
 
-            const imageContainer = document.createElement("div");
-            imageContainer.className = "image-container";
+            const mediaContainer = document.createElement("div");
+            mediaContainer.className = "media-container";
 
             // Loading placeholder
             const loadingPlaceholder = document.createElement("div");
             loadingPlaceholder.className = "loading-placeholder";
             loadingPlaceholder.innerHTML = '<div class="loading-spinner"></div>Loading...';
-            imageContainer.appendChild(loadingPlaceholder);
+            mediaContainer.appendChild(loadingPlaceholder);
 
-            const image = document.createElement("img");
-            image.src = img.src;
-            image.alt = `${img.model} – ${ex.prompt}`;
-            image.style.display = 'none';
+            // Create appropriate media element
+            const mediaElement = this.isVideoFile(media.src) 
+              ? document.createElement("video")
+              : document.createElement("img");
+
+            mediaElement.src = media.src;
+            mediaElement.style.display = 'none';
             
-            image.onload = () => {
+            if (mediaElement.tagName === 'VIDEO') {
+              mediaElement.muted = true;
+              mediaElement.loop = true;
+              mediaElement.playsInline = true;
+              mediaElement.setAttribute('aria-label', `${media.model} video – ${ex.prompt}`);
+              
+              // Add play overlay for videos
+              const overlay = document.createElement("div");
+              overlay.className = "video-overlay";
+              overlay.innerHTML = "▶";
+              mediaContainer.appendChild(overlay);
+              
+              // Auto-play on hover
+              fig.addEventListener('mouseenter', () => {
+                if (mediaElement.paused) mediaElement.play().catch(() => {});
+              });
+              fig.addEventListener('mouseleave', () => {
+                mediaElement.pause();
+              });
+            } else {
+              mediaElement.alt = `${media.model} – ${ex.prompt}`;
+            }
+
+            // Media type badge
+            const badge = document.createElement("div");
+            badge.className = "media-type-badge";
+            badge.textContent = this.getMediaType(media.src);
+            mediaContainer.appendChild(badge);
+
+            mediaElement.onload = mediaElement.onloadeddata = () => {
               loadingPlaceholder.style.display = 'none';
-              image.style.display = 'block';
+              mediaElement.style.display = 'block';
             };
 
-            imageContainer.appendChild(image);
-            fig.appendChild(imageContainer);
+            mediaContainer.appendChild(mediaElement);
+            fig.appendChild(mediaContainer);
 
             const cap = document.createElement("figcaption");
-            cap.textContent = img.model;
+            cap.textContent = media.model;
             fig.appendChild(cap);
 
             // Click handler for modal
-            fig.addEventListener('click', () => this.openModal(img.src, `${img.model} – ${ex.prompt}`));
+            fig.addEventListener('click', () => this.openModal(media.src, `${media.model} – ${ex.prompt}`));
             fig.addEventListener('keydown', (e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                this.openModal(img.src, `${img.model} – ${ex.prompt}`);
+                this.openModal(media.src, `${media.model} – ${ex.prompt}`);
               }
             });
 
@@ -732,8 +778,8 @@
         });
       }
 
-      handleImageError(img) {
-        const container = img.closest('.image-container');
+      handleMediaError(mediaElement) {
+        const container = mediaElement.closest('.media-container');
         const loadingPlaceholder = container.querySelector('.loading-placeholder');
         
         if (loadingPlaceholder) {
@@ -741,21 +787,45 @@
           loadingPlaceholder.classList.add('error-placeholder');
         }
         
-        img.style.display = 'none';
+        mediaElement.style.display = 'none';
       }
 
       openModal(src, caption) {
-        this.modalImage.src = src;
-        this.modalImage.alt = caption;
+        // Clear previous content
+        this.modalMediaContainer.innerHTML = '';
+        
+        // Create appropriate media element for modal
+        const mediaElement = this.isVideoFile(src) 
+          ? document.createElement("video")
+          : document.createElement("img");
+
+        mediaElement.src = src;
+        
+        if (mediaElement.tagName === 'VIDEO') {
+          mediaElement.controls = true;
+          mediaElement.autoplay = true;
+          mediaElement.loop = true;
+          mediaElement.style.maxWidth = '100%';
+          mediaElement.style.maxHeight = '100%';
+        } else {
+          mediaElement.alt = caption;
+        }
+
+        this.modalMediaContainer.appendChild(mediaElement);
         this.modalCaption.textContent = caption;
         this.modal.classList.add('active');
         this.modal.setAttribute('aria-hidden', 'false');
         
-        // Focus management
         this.modal.focus();
       }
 
       closeModal() {
+        // Pause any videos when closing modal
+        const video = this.modalMediaContainer.querySelector('video');
+        if (video) {
+          video.pause();
+        }
+        
         this.modal.classList.remove('active');
         this.modal.setAttribute('aria-hidden', 'true');
       }
@@ -763,7 +833,7 @@
 
     // Initialize the application
     document.addEventListener('DOMContentLoaded', () => {
-      new ImageShowdown();
+      new MediaShowdown();
     });
   </script>
 </body>

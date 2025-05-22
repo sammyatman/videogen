@@ -1,840 +1,476 @@
+<!--
+  GenAI Media Showdown – Images + Videos
+  ======================================
+  Drop this file at the root of a GitHub repository (e.g. main branch)
+  and enable GitHub Pages → Deploy from branch.  
+  Put your media under an assets/ folder (or anywhere you like) and
+  fill in the examples array below with your own prompts, model names
+  and file paths ( .jpg / .png / .mp4 / .webm …).  
+  One self-contained file – no build step required.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GenAI Media Showdown – Images & Videos</title>
-  <style>
-    :root {
-      --bg: #0f0f0f;
-      --bg-light: #1a1a1a;
-      --fg: #ffffff;
-      --fg-muted: #a0a0a0;
-      --surface: #262626;
-      --surface-hover: #333333;
-      --border: #404040;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --shadow: rgba(0, 0, 0, 0.3);
-      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GenAI Media Showdown</title>
 
-    * {
-      box-sizing: border-box;
-    }
+<!-- ----------- STYLES ----------- -->
+<style>
+:root{
+  --bg:#0f0f0f;--bg-light:#1a1a1a;--fg:#fff;--fg-muted:#a0a0a0;
+  --surface:#262626;--surface-hover:#333;--border:#404040;
+  --accent:#3b82f6;--accent-hover:#2563eb;--success:#10b981;
+  --warning:#f59e0b;--shadow:rgba(0,0,0,.3);
+  --gradient:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);line-height:1.6}
 
-    html {
-      scroll-behavior: smooth;
-    }
+header{
+  background:var(--surface);backdrop-filter:blur(10px);position:sticky;top:0;
+  z-index:100;border-bottom:1px solid var(--border);padding:1rem 2rem;
+  box-shadow:0 2px 20px var(--shadow)
+}
+.header-content{max-width:1400px;margin:0 auto}
+header h1{
+  margin:0 0 1rem;font-size:2rem;font-weight:700;
+  background:var(--gradient);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text
+}
 
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.6;
-    }
+.search-container{margin-bottom:1rem;position:relative}
+#searchInput{
+  width:100%;max-width:400px;padding:.75rem 1rem .75rem 2.5rem;
+  background:var(--bg-light);border:1px solid var(--border);border-radius:12px;
+  color:var(--fg);font-size:.9rem;transition:.2s
+}
+#searchInput:focus{outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.search-icon{position:absolute;left:.75rem;top:50%;
+  transform:translateY(-50%);color:var(--fg-muted);pointer-events:none}
 
-    header {
-      background: var(--surface);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 20px var(--shadow);
-    }
+nav{display:flex;flex-wrap:wrap;gap:.5rem;max-height:200px;overflow-y:auto}
+nav a{
+  padding:.5rem 1rem;background:var(--bg-light);
+  border:1px solid var(--border);border-radius:8px;text-decoration:none;
+  color:var(--fg);font-size:.85rem;white-space:nowrap;transition:.2s;
+  position:relative;overflow:hidden
+}
+nav a:hover{background:var(--surface-hover);border-color:var(--accent);
+  transform:translateY(-1px)}
+nav a.hidden{display:none}
 
-    .header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+main{max-width:1400px;margin:0 auto;padding:2rem}
 
-    header h1 {
-      margin: 0 0 1rem;
-      font-size: 2rem;
-      font-weight: 700;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+.stats{display:flex;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1rem;text-align:center;min-width:120px
+}
+.stat-number{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.stat-label{font-size:.8rem;color:var(--fg-muted);text-transform:uppercase}
 
-    .search-container {
-      margin-bottom: 1rem;
-      position: relative;
-    }
+section{margin-bottom:4rem;opacity:0;transform:translateY(20px);
+         animation:fadeInUp .6s ease forwards}
+@keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
+section.hidden{display:none}
 
-    #searchInput {
-      width: 100%;
-      max-width: 400px;
-      padding: 0.75rem 1rem 0.75rem 2.5rem;
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--fg);
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
-    }
+h2{margin:0 0 1.5rem;font-size:1.5rem;font-weight:600;
+    scroll-margin-top:8rem;color:var(--fg);position:relative;padding-bottom:.5rem}
+h2::after{
+  content:'';position:absolute;bottom:0;left:0;width:60px;height:2px;
+  background:var(--gradient);border-radius:1px
+}
 
-    #searchInput:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:1.5rem}
 
-    .search-icon {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--fg-muted);
-      pointer-events: none;
-    }
+figure{
+  margin:0;background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;box-shadow:0 4px 20px var(--shadow);
+  display:flex;flex-direction:column;transition:.3s;cursor:pointer;position:relative
+}
+figure:hover{transform:translateY(-4px);box-shadow:0 8px 40px var(--shadow);
+             border-color:var(--accent)}
 
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      max-height: 200px;
-      overflow-y: auto;
-    }
+.image-container{position:relative;aspect-ratio:1;overflow:hidden;
+                 background:var(--bg-light)}
 
-    nav a {
-      padding: 0.5rem 1rem;
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--fg);
-      font-size: 0.85rem;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
+figure img,figure video{
+  display:block;width:100%;height:100%;object-fit:cover;transition:.3s
+}
+figure:hover img,figure:hover video{transform:scale(1.05)}
 
-    nav a:hover {
-      background: var(--surface-hover);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
+.loading-placeholder{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  color:var(--fg-muted);font-size:.9rem
+}
+.loading-spinner{
+  width:24px;height:24px;border:2px solid var(--border);
+  border-top:2px solid var(--accent);border-radius:50%;
+  animation:spin 1s linear infinite;margin-right:.5rem}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.error-placeholder{
+  background:rgba(239,68,68,.1);color:#ef4444;
+  border:1px solid rgba(239,68,68,.2)
+}
 
-    nav a.hidden {
-      display: none;
-    }
+figcaption{
+  padding:1rem;font-size:.9rem;font-weight:600;text-align:center;
+  border-top:1px solid var(--border);background:var(--surface)
+}
 
-    main {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
+/* ───────── Modal ───────── */
+.modal{
+  display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(10px)
+}
+.modal.active{display:flex;align-items:center;justify-content:center;
+              animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-content{max-width:90vw;max-height:90vh;position:relative;
+               animation:scaleIn .3s ease}
+@keyframes scaleIn{from{transform:scale(.8)}to{transform:scale(1)}}
+.modal img,.modal video{max-width:100%;max-height:100%;object-fit:contain;
+                        border-radius:12px}
+.modal video{background:#000}
+.modal-caption{
+  position:absolute;bottom:-3rem;left:50%;transform:translateX(-50%);
+  background:var(--surface);color:var(--fg);padding:.5rem 1rem;border-radius:8px;
+  font-size:.9rem;white-space:nowrap
+}
+.close{
+  position:absolute;top:-3rem;right:0;color:var(--fg);font-size:2rem;
+  font-weight:bold;cursor:pointer;width:2.5rem;height:2.5rem;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border-radius:50%;transition:.2s}
+.close:hover{background:var(--surface-hover);transform:scale(1.1)}
 
-    .stats {
-      display: flex;
-      gap: 2rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
+.no-results{text-align:center;color:var(--fg-muted);font-size:1.1rem;
+            margin:4rem 0;display:none}.no-results.visible{display:block}
 
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      text-align: center;
-      min-width: 120px;
-    }
-
-    .stat-number {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--fg-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    section {
-      margin-bottom: 4rem;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.6s ease forwards;
-    }
-
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    section.hidden {
-      display: none;
-    }
-
-    h2 {
-      margin: 0 0 1.5rem;
-      font-size: 1.5rem;
-      font-weight: 600;
-      scroll-margin-top: 8rem;
-      color: var(--fg);
-      position: relative;
-      padding-bottom: 0.5rem;
-    }
-
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 2px;
-      background: var(--gradient);
-      border-radius: 1px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    figure {
-      margin: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px var(--shadow);
-      display: flex;
-      flex-direction: column;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
-    }
-
-    figure:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 40px var(--shadow);
-      border-color: var(--accent);
-    }
-
-    .media-container {
-      position: relative;
-      aspect-ratio: 1;
-      overflow: hidden;
-      background: var(--bg-light);
-    }
-
-    figure img, figure video {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: all 0.3s ease;
-    }
-
-    figure:hover img, figure:hover video {
-      transform: scale(1.05);
-    }
-
-    /* Video-specific styles */
-    figure video {
-      cursor: pointer;
-    }
-
-    .video-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 24px;
-      pointer-events: none;
-      transition: all 0.3s ease;
-    }
-
-    figure:hover .video-overlay {
-      background: rgba(59, 130, 246, 0.8);
-      transform: translate(-50%, -50%) scale(1.1);
-    }
-
-    .media-type-badge {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .loading-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: var(--fg-muted);
-      font-size: 0.9rem;
-    }
-
-    .loading-spinner {
-      width: 24px;
-      height: 24px;
-      border: 2px solid var(--border);
-      border-top: 2px solid var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-right: 0.5rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .error-placeholder {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    figcaption {
-      padding: 1rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-align: center;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(10px);
-    }
-
-    .modal.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-content {
-      max-width: 90vw;
-      max-height: 90vh;
-      position: relative;
-      animation: scaleIn 0.3s ease;
-    }
-
-    @keyframes scaleIn {
-      from { transform: scale(0.8); }
-      to { transform: scale(1); }
-    }
-
-    .modal img, .modal video {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
-    .modal video {
-      background: black;
-    }
-
-    .modal-caption {
-      position: absolute;
-      bottom: -3rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface);
-      color: var(--fg);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      white-space: nowrap;
-    }
-
-    .close {
-      position: absolute;
-      top: -3rem;
-      right: 0;
-      color: var(--fg);
-      font-size: 2rem;
-      font-weight: bold;
-      cursor: pointer;
-      width: 2.5rem;
-      height: 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface);
-      border-radius: 50%;
-      transition: all 0.2s ease;
-    }
-
-    .close:hover {
-      background: var(--surface-hover);
-      transform: scale(1.1);
-    }
-
-    .no-results {
-      text-align: center;
-      color: var(--fg-muted);
-      font-size: 1.1rem;
-      margin: 4rem 0;
-      display: none;
-    }
-
-    .no-results.visible {
-      display: block;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      header {
-        padding: 1rem;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      main {
-        padding: 1rem;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-
-      .stats {
-        justify-content: center;
-      }
-
-      nav {
-        max-height: 150px;
-      }
-    }
-
-    /* Accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-
-      html {
-        scroll-behavior: auto;
-      }
-    }
-
-    /* Focus styles for keyboard navigation */
-    nav a:focus,
-    figure:focus,
-    #searchInput:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-  </style>
+/* ───── Responsive ───── */
+@media(max-width:768px){
+  header{padding:1rem}
+  header h1{font-size:1.5rem}
+  main{padding:1rem}
+  .grid{grid-template-columns:1fr;gap:1rem}
+  .stats{justify-content:center}
+  nav{max-height:150px}
+}
+/* Accessibility */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;
+   animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  html{scroll-behavior:auto}
+}
+nav a:focus,figure:focus,#searchInput:focus{
+  outline:2px solid var(--accent);outline-offset:2px}
+</style>
 </head>
 <body>
-  <header>
-    <div class="header-content">
-      <h1>GenAI Media Showdown</h1>
-      
-      <div class="search-container">
-        <div class="search-icon">🔍</div>
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Search prompts..." 
-          aria-label="Search prompts"
-        />
-      </div>
+<header>
+  <div class="header-content">
+    <h1>GenAI Media Showdown</h1>
 
-      <nav id="nav" role="navigation" aria-label="Prompt navigation"></nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-number" id="totalPrompts">0</div>
-        <div class="stat-label">Prompts</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number" id="totalMedia">0</div>
-        <div class="stat-label">Media Files</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number" id="totalModels">0</div>
-        <div class="stat-label">Models</div>
-      </div>
+    <div class="search-container">
+      <div class="search-icon">🔍</div>
+      <input id="searchInput" type="text" placeholder="Search prompts…" aria-label="Search prompts"/>
     </div>
 
-    <div id="content"></div>
+    <nav id="nav" role="navigation" aria-label="Prompt navigation"></nav>
+  </div>
+</header>
 
-    <div class="no-results" id="noResults">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
-      <div>No prompts match your search</div>
-      <div style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--fg-muted);">
-        Try adjusting your search terms
-      </div>
+<main>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-number" id="totalPrompts">0</div>
+      <div class="stat-label">Prompts</div>
     </div>
-  </main>
-
-  <!-- Modal for media viewing -->
-  <div id="mediaModal" class="modal" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-      <span class="close" aria-label="Close modal">&times;</span>
-      <div id="modalMediaContainer"></div>
-      <div class="modal-caption" id="modalCaption"></div>
+    <div class="stat">
+      <div class="stat-number" id="totalMedia">0</div>
+      <div class="stat-label">Media</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number" id="totalModels">0</div>
+      <div class="stat-label">Models</div>
     </div>
   </div>
 
-  <script>
-    const examples = [
-      {
-        prompt: "Realistic woman in mid 40s walking through a city street in New York",
-        images: [
-          { model: "Veo 3", src: "examples/woman_40_walking_nyc/veo3.mp4" },
-          { model: "Veo 2", src: "examples/woman_40_walking_nyc/veo2.mp4" },
-          { model: "HunYuan", src: "examples/woman_40_walking_nyc/hunyuan.mp4" },
-          { model: "Wan 2.1", src: "examples/woman_40_walking_nyc/wan21.mp4" },
-          { model: "Kling 1.6", src: "examples/woman_40_walking_nyc/kling16.mp4" },
-          { model: "Kling 2.0", src: "examples/woman_40_walking_nyc/kling20.mp4" },
-          { model: "FramePack + HunYuan", src: "examples/woman_40_walking_nyc/framepack_hunyuan.mp4" },
-        ],
-      },
-      {
-        prompt: "A nature scene with a blue hummingbird moving towards a flower then flying away",
-        images: [
-          { model: "Veo 3", src: "examples/humming_bird_flying/veo3.mp4" },
-          { model: "Veo 2", src: "examples/humming_bird_flying/veo2.mp4" },
-          { model: "HunYuan", src: "examples/humming_bird_flying/hunyuan.mp4" },
-          { model: "Wan 2.1", src: "examples/humming_bird_flying/wan21.mp4" },
-          { model: "Kling 1.6", src: "examples/humming_bird_flying/kling16.mp4" },
-          { model: "Kling 2.0", src: "examples/humming_bird_flying/kling20.mp4" },
-          { model: "FramePack + HunYuan", src: "examples/humming_bird_flying/framepack_hunyuan.mp4" },
-        ],
-      },
-      {
-        prompt: "Mixed media comparison - images and videos",
-        images: [
-          { model: "DALL-E 3", src: "examples/mixed/dalle3.jpg" },
-          { model: "Midjourney", src: "examples/mixed/midjourney.png" },
-          { model: "Stable Diffusion", src: "examples/mixed/sd.jpg" },
-          { model: "Veo 3", src: "examples/mixed/veo3.mp4" },
-          { model: "Kling", src: "examples/mixed/kling.mp4" },
-        ],
-      },
-    ];
+  <div id="content"></div>
 
-    class MediaShowdown {
-      constructor() {
-        this.examples = examples;
-        this.filteredExamples = [...examples];
-        this.modal = document.getElementById('mediaModal');
-        this.modalMediaContainer = document.getElementById('modalMediaContainer');
-        this.modalCaption = document.getElementById('modalCaption');
-        
-        this.init();
-      }
+  <div class="no-results" id="noResults">
+    <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+    <div>No prompts match your search</div>
+    <div style="font-size:.9rem;margin-top:.5rem;color:var(--fg-muted)">
+      Try adjusting your search terms
+    </div>
+  </div>
+</main>
 
-      init() {
-        this.setupEventListeners();
-        this.updateStats();
-        this.buildNav();
-        this.buildContent();
-      }
+<!-- ───── Modal ───── -->
+<div id="mediaModal" class="modal" role="dialog" aria-hidden="true">
+  <div class="modal-content">
+    <span class="close" aria-label="Close modal">×</span>
+    <img id="modalImage" alt="" style="display:none"/>
+    <video id="modalVideo" controls playsinline style="display:none"></video>
+    <div class="modal-caption" id="modalCaption"></div>
+  </div>
+</div>
 
-      isVideoFile(src) {
-        const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv'];
-        return videoExtensions.some(ext => src.toLowerCase().endsWith(ext));
-      }
+<!-- ----------- DATA + APP ----------- -->
+<script>
+/*───────────────────────────────────────────
+ 1) EDIT YOUR DATA BELOW
+───────────────────────────────────────────*/
+const examples = [
+  {
+    prompt:"Realistic woman in mid 40s walking through a city street in New York",
+    images:[
+      {model:"Veo 3",src:"examples/woman_40_walking_nyc/veo3.mp4"},
+      {model:"Veo 2",src:"examples/woman_40_walking_nyc/veo2.mp4"},
+      {model:"HunYuan",src:"examples/woman_40_walking_nyc/hunyuan.mp4"},
+      {model:"Wan 2.1",src:"examples/woman_40_walking_nyc/wan21.mp4"},
+      {model:"Kling 1.6",src:"examples/woman_40_walking_nyc/kling16.mp4"},
+      {model:"Kling 2.0",src:"examples/woman_40_walking_nyc/kling20.mp4"},
+      {model:"FramePack + HunYuan",src:"examples/woman_40_walking_nyc/framepack_hunyuan.mp4"}
+    ],
+  },
+  {
+    prompt:"A nature scene with a blue hummingbird moving towards a flower then flying away",
+    images:[
+      {model:"Veo 3",src:"examples/humming_bird_flying/veo3.mp4"},
+      {model:"Veo 2",src:"examples/humming_bird_flying/veo2.mp4"},
+      {model:"HunYuan",src:"examples/humming_bird_flying/hunyuan.mp4"},
+      {model:"Wan 2.1",src:"examples/humming_bird_flying/wan21.mp4"},
+      {model:"Kling 1.6",src:"examples/humming_bird_flying/kling16.mp4"},
+      {model:"Kling 2.0",src:"examples/humming_bird_flying/kling20.mp4"},
+      {model:"FramePack + HunYuan",src:"examples/humming_bird_flying/framepack_hunyuan.mp4"}
+    ],
+  },
+  {
+    prompt:"A first person view of a home chef chopping onions",
+    images:[
+      {model:"Veo 3",src:"examples/onions/veo3.mp4"},
+      {model:"Veo 2",src:"examples/onions/veo2.mp4"},
+      {model:"HunYuan",src:"examples/onions/hunyuan.mp4"},
+      {model:"Wan 2.1",src:"examples/onions/wan21.mp4"},
+      {model:"Kling 1.6",src:"examples/onions/kling16.mp4"},
+      {model:"Kling 2.0",src:"examples/onions/kling20.mp4"},
+      {model:"FramePack + HunYuan",src:"examples/onions/framepack_hunyuan.mp4"}
+    ],
+  },
+  {
+    prompt:"Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
+    images:[
+      {model:"Reference Image",src:"examples/anime/original.jpeg"},
+      {model:"Reference 1",src:"examples/anime/ref1.png"},
+      {model:"Reference 2",src:"examples/anime/ref2.png"},
+      {model:"Veo 3 – v1",src:"examples/anime/veo3_1.mp4"},
+      {model:"Veo 3 – v2",src:"examples/anime/veo3_2.mp4"}
+    ],
+  },
+];
+/*───────────────────────────────────────────
+ 2)  APPLICATION CODE
+───────────────────────────────────────────*/
+class MediaShowdown{
+  constructor(){
+    this.examples=examples;
+    this.filtered=[...examples];
+    this.modal=document.getElementById('mediaModal');
+    this.modalImg=document.getElementById('modalImage');
+    this.modalVid=document.getElementById('modalVideo');
+    this.modalCap=document.getElementById('modalCaption');
+    this.init();
+  }
 
-      getMediaType(src) {
-        return this.isVideoFile(src) ? 'video' : 'image';
-      }
+  /* ── Init ── */
+  init(){
+    this.listeners();
+    this.updateStats();
+    this.buildNav();
+    this.buildContent();
+  }
 
-      setupEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+  listeners(){
+    /* search */
+    document.getElementById('searchInput')
+      .addEventListener('input',(e)=>this.handleSearch(e.target.value));
 
-        const closeBtn = document.querySelector('.close');
-        closeBtn.addEventListener('click', () => this.closeModal());
-        
-        this.modal.addEventListener('click', (e) => {
-          if (e.target === this.modal) this.closeModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') this.closeModal();
-        });
-
-        document.addEventListener('error', (e) => {
-          if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
-            this.handleMediaError(e.target);
-          }
-        }, true);
-      }
-
-      slugify(text) {
-        return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      }
-
-      updateStats() {
-        const totalPrompts = this.examples.length;
-        const totalMedia = this.examples.reduce((sum, ex) => sum + ex.images.length, 0);
-        const allModels = new Set();
-        this.examples.forEach(ex => {
-          ex.images.forEach(img => allModels.add(img.model));
-        });
-
-        document.getElementById('totalPrompts').textContent = totalPrompts;
-        document.getElementById('totalMedia').textContent = totalMedia;
-        document.getElementById('totalModels').textContent = allModels.size;
-      }
-
-      handleSearch(query) {
-        const searchTerm = query.toLowerCase().trim();
-        
-        if (!searchTerm) {
-          this.filteredExamples = [...this.examples];
-        } else {
-          this.filteredExamples = this.examples.filter(ex => 
-            ex.prompt.toLowerCase().includes(searchTerm) ||
-            ex.images.some(img => img.model.toLowerCase().includes(searchTerm))
-          );
-        }
-
-        this.updateNavigation();
-        this.updateContent();
-        this.updateNoResults();
-      }
-
-      updateNavigation() {
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
-          const href = link.getAttribute('href').substring(1);
-          const isVisible = this.filteredExamples.some(ex => this.slugify(ex.prompt) === href);
-          link.classList.toggle('hidden', !isVisible);
-        });
-      }
-
-      updateContent() {
-        const sections = document.querySelectorAll('section');
-        sections.forEach(section => {
-          const id = section.id;
-          const isVisible = this.filteredExamples.some(ex => this.slugify(ex.prompt) === id);
-          section.classList.toggle('hidden', !isVisible);
-        });
-      }
-
-      updateNoResults() {
-        const noResults = document.getElementById('noResults');
-        noResults.classList.toggle('visible', this.filteredExamples.length === 0);
-      }
-
-      buildNav() {
-        const nav = document.getElementById("nav");
-        this.examples.forEach((ex) => {
-          const a = document.createElement("a");
-          a.href = "#" + this.slugify(ex.prompt);
-          a.textContent = ex.prompt.length > 50 ? ex.prompt.slice(0, 47) + "…" : ex.prompt;
-          a.setAttribute('aria-label', `Jump to: ${ex.prompt}`);
-          nav.appendChild(a);
-        });
-      }
-
-      buildContent() {
-        const content = document.getElementById("content");
-        this.examples.forEach((ex, index) => {
-          const section = document.createElement("section");
-          section.id = this.slugify(ex.prompt);
-          section.style.animationDelay = `${index * 0.1}s`;
-
-          const h = document.createElement("h2");
-          h.textContent = ex.prompt;
-          section.appendChild(h);
-
-          const grid = document.createElement("div");
-          grid.className = "grid";
-
-          ex.images.forEach((media) => {
-            const fig = document.createElement("figure");
-            fig.setAttribute('tabindex', '0');
-            fig.setAttribute('role', 'button');
-            fig.setAttribute('aria-label', `View ${media.model} ${this.getMediaType(media.src)} for: ${ex.prompt}`);
-
-            const mediaContainer = document.createElement("div");
-            mediaContainer.className = "media-container";
-
-            // Loading placeholder
-            const loadingPlaceholder = document.createElement("div");
-            loadingPlaceholder.className = "loading-placeholder";
-            loadingPlaceholder.innerHTML = '<div class="loading-spinner"></div>Loading...';
-            mediaContainer.appendChild(loadingPlaceholder);
-
-            // Create appropriate media element
-            const mediaElement = this.isVideoFile(media.src) 
-              ? document.createElement("video")
-              : document.createElement("img");
-
-            mediaElement.src = media.src;
-            mediaElement.style.display = 'none';
-            
-            if (mediaElement.tagName === 'VIDEO') {
-              mediaElement.muted = true;
-              mediaElement.loop = true;
-              mediaElement.playsInline = true;
-              mediaElement.setAttribute('aria-label', `${media.model} video – ${ex.prompt}`);
-              
-              // Add play overlay for videos
-              const overlay = document.createElement("div");
-              overlay.className = "video-overlay";
-              overlay.innerHTML = "▶";
-              mediaContainer.appendChild(overlay);
-              
-              // Auto-play on hover
-              fig.addEventListener('mouseenter', () => {
-                if (mediaElement.paused) mediaElement.play().catch(() => {});
-              });
-              fig.addEventListener('mouseleave', () => {
-                mediaElement.pause();
-              });
-            } else {
-              mediaElement.alt = `${media.model} – ${ex.prompt}`;
-            }
-
-            // Media type badge
-            const badge = document.createElement("div");
-            badge.className = "media-type-badge";
-            badge.textContent = this.getMediaType(media.src);
-            mediaContainer.appendChild(badge);
-
-            mediaElement.onload = mediaElement.onloadeddata = () => {
-              loadingPlaceholder.style.display = 'none';
-              mediaElement.style.display = 'block';
-            };
-
-            mediaContainer.appendChild(mediaElement);
-            fig.appendChild(mediaContainer);
-
-            const cap = document.createElement("figcaption");
-            cap.textContent = media.model;
-            fig.appendChild(cap);
-
-            // Click handler for modal
-            fig.addEventListener('click', () => this.openModal(media.src, `${media.model} – ${ex.prompt}`));
-            fig.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.openModal(media.src, `${media.model} – ${ex.prompt}`);
-              }
-            });
-
-            grid.appendChild(fig);
-          });
-
-          section.appendChild(grid);
-          content.appendChild(section);
-        });
-      }
-
-      handleMediaError(mediaElement) {
-        const container = mediaElement.closest('.media-container');
-        const loadingPlaceholder = container.querySelector('.loading-placeholder');
-        
-        if (loadingPlaceholder) {
-          loadingPlaceholder.innerHTML = '❌ Failed to load';
-          loadingPlaceholder.classList.add('error-placeholder');
-        }
-        
-        mediaElement.style.display = 'none';
-      }
-
-      openModal(src, caption) {
-        // Clear previous content
-        this.modalMediaContainer.innerHTML = '';
-        
-        // Create appropriate media element for modal
-        const mediaElement = this.isVideoFile(src) 
-          ? document.createElement("video")
-          : document.createElement("img");
-
-        mediaElement.src = src;
-        
-        if (mediaElement.tagName === 'VIDEO') {
-          mediaElement.controls = true;
-          mediaElement.autoplay = true;
-          mediaElement.loop = true;
-          mediaElement.style.maxWidth = '100%';
-          mediaElement.style.maxHeight = '100%';
-        } else {
-          mediaElement.alt = caption;
-        }
-
-        this.modalMediaContainer.appendChild(mediaElement);
-        this.modalCaption.textContent = caption;
-        this.modal.classList.add('active');
-        this.modal.setAttribute('aria-hidden', 'false');
-        
-        this.modal.focus();
-      }
-
-      closeModal() {
-        // Pause any videos when closing modal
-        const video = this.modalMediaContainer.querySelector('video');
-        if (video) {
-          video.pause();
-        }
-        
-        this.modal.classList.remove('active');
-        this.modal.setAttribute('aria-hidden', 'true');
-      }
-    }
-
-    // Initialize the application
-    document.addEventListener('DOMContentLoaded', () => {
-      new MediaShowdown();
+    /* modal close */
+    document.querySelector('.close')
+      .addEventListener('click',()=>this.closeModal());
+    this.modal.addEventListener('click',(e)=>{
+      if(e.target===this.modal) this.closeModal();
     });
-  </script>
+    document.addEventListener('keydown',(e)=>{
+      if(e.key==='Escape') this.closeModal();
+    });
+
+    /* global error handling for thumbnails */
+    document.addEventListener('error',(e)=>{
+      if(e.target.tagName==='IMG'||e.target.tagName==='VIDEO'){
+        this.handleError(e.target);
+      }
+    },true);
+  }
+
+  slugify(txt){return txt.toLowerCase()
+        .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
+
+  /* ── Statistics ── */
+  updateStats(){
+    const totalPrompts=this.examples.length;
+    const totalMedia=this.examples.reduce((s,ex)=>s+ex.images.length,0);
+    const models=new Set();
+    this.examples.forEach(ex=>ex.images.forEach(img=>models.add(img.model)));
+
+    document.getElementById('totalPrompts').textContent=totalPrompts;
+    document.getElementById('totalMedia').textContent=totalMedia;
+    document.getElementById('totalModels').textContent=models.size;
+  }
+
+  /* ── Search ── */
+  handleSearch(query){
+    const term=query.toLowerCase().trim();
+    this.filtered=term?this.examples.filter(ex=>
+      ex.prompt.toLowerCase().includes(term) ||
+      ex.images.some(m=>m.model.toLowerCase().includes(term))
+    ):[...this.examples];
+
+    this.updateNav();this.updateContent();this.toggleNoResults();
+  }
+
+  updateNav(){
+    document.querySelectorAll('nav a').forEach(link=>{
+      const id=link.getAttribute('href').slice(1);
+      const visible=this.filtered.some(ex=>this.slugify(ex.prompt)===id);
+      link.classList.toggle('hidden',!visible);
+    });
+  }
+  updateContent(){
+    document.querySelectorAll('section').forEach(sec=>{
+      const visible=this.filtered.some(ex=>this.slugify(ex.prompt)===sec.id);
+      sec.classList.toggle('hidden',!visible);
+    });
+  }
+  toggleNoResults(){
+    document.getElementById('noResults')
+      .classList.toggle('visible',this.filtered.length===0);
+  }
+
+  /* ── Navigation build ── */
+  buildNav(){
+    const nav=document.getElementById('nav');
+    this.examples.forEach(ex=>{
+      const a=document.createElement('a');
+      a.href='#'+this.slugify(ex.prompt);
+      a.textContent=ex.prompt.length>50?ex.prompt.slice(0,47)+'…':ex.prompt;
+      a.setAttribute('aria-label',`Jump to: ${ex.prompt}`);
+      nav.appendChild(a);
+    });
+  }
+
+  /* ── Content build ── */
+  buildContent(){
+    const content=document.getElementById('content');
+    this.examples.forEach((ex,i)=>{
+      const sec=document.createElement('section');
+      sec.id=this.slugify(ex.prompt);
+      sec.style.animationDelay=`${i*0.1}s`;
+
+      const h=document.createElement('h2');h.textContent=ex.prompt;sec.appendChild(h);
+      const grid=document.createElement('div');grid.className='grid';
+
+      ex.images.forEach(img=>{
+        const fig=document.createElement('figure');
+        fig.tabIndex=0;fig.role='button';
+        fig.setAttribute('aria-label',`View ${img.model} media for: ${ex.prompt}`);
+
+        const container=document.createElement('div');container.className='image-container';
+
+        /* placeholder */
+        const load=document.createElement('div');load.className='loading-placeholder';
+        load.innerHTML='<div class="loading-spinner"></div>Loading…';
+        container.appendChild(load);
+
+        /* decide media type */
+        const isVideo=/\.(mp4|webm|mov)$/i.test(img.src);
+        let mediaEl;
+
+        if(isVideo){
+          mediaEl=document.createElement('video');
+          mediaEl.src=img.src;mediaEl.muted=true;mediaEl.playsInline=true;
+          mediaEl.loop=true;mediaEl.autoplay=true;mediaEl.style.display='none';
+          mediaEl.addEventListener('loadeddata',()=>{load.remove();mediaEl.style.display='block';});
+        }else{
+          mediaEl=document.createElement('img');
+          mediaEl.src=img.src;mediaEl.alt=`${img.model} – ${ex.prompt}`;
+          mediaEl.style.display='none';
+          mediaEl.onload=()=>{load.remove();mediaEl.style.display='block';};
+        }
+
+        container.appendChild(mediaEl);fig.appendChild(container);
+
+        const cap=document.createElement('figcaption');cap.textContent=img.model;
+        fig.appendChild(cap);
+
+        /* open modal */
+        fig.addEventListener('click',()=>this.openModal(img.src,isVideo,`${img.model} – ${ex.prompt}`));
+        fig.addEventListener('keydown',e=>{
+          if(e.key==='Enter'||e.key===' '){e.preventDefault();
+            this.openModal(img.src,isVideo,`${img.model} – ${ex.prompt}`);}
+        });
+
+        grid.appendChild(fig);
+      });
+
+      sec.appendChild(grid);content.appendChild(sec);
+    });
+  }
+
+  /* ── Error placeholder ── */
+  handleError(el){
+    const cont=el.closest('.image-container');
+    const load=cont.querySelector('.loading-placeholder');
+    if(load){
+      load.textContent='❌ Failed to load';
+      load.classList.add('error-placeholder');
+    }
+    el.style.display='none';
+  }
+
+  /* ── Modal ── */
+  openModal(src,isVideo,caption){
+    /* reset */
+    this.modalImg.style.display=this.modalVid.style.display='none';
+    this.modalImg.removeAttribute('src');this.modalVid.removeAttribute('src');
+
+    if(isVideo){
+      this.modalVid.src=src;this.modalVid.style.display='block';
+      this.modalVid.play().catch(()=>{});
+    }else{
+      this.modalImg.src=src;this.modalImg.alt=caption;
+      this.modalImg.style.display='block';
+    }
+    this.modalCap.textContent=caption;
+    this.modal.classList.add('active');this.modal.setAttribute('aria-hidden','false');
+    this.modal.focus();
+  }
+  closeModal(){
+    this.modal.classList.remove('active');this.modal.setAttribute('aria-hidden','true');
+    this.modalVid.pause();
+  }
+}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded',()=>new MediaShowdown());
+</script>
 </body>
 </html>
+

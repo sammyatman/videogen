@@ -1,0 +1,751 @@
+<!--
+  GenAI Image Showdown – Enhanced Template
+  =========================================
+  Drop this file at the root of a GitHub repository (e.g. `main` branch)
+  and enable **GitHub Pages → Deploy from branch** in the repo settings.
+  Place your images under an `assets/` folder (or anywhere you like) and
+  fill in the `examples` array below with your own prompts, model names
+  and image paths. Everything lives in one file so you can copy‑paste or
+  tweak quickly – no build step required.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GenAI Image Showdown – Enhanced</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --bg-light: #1a1a1a;
+      --fg: #ffffff;
+      --fg-muted: #a0a0a0;
+      --surface: #262626;
+      --surface-hover: #333333;
+      --border: #404040;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 20px var(--shadow);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0 0 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .search-container {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    #searchInput {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--fg);
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--fg-muted);
+      pointer-events: none;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    nav a {
+      padding: 0.5rem 1rem;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--fg);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    nav a:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    nav a.hidden {
+      display: none;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    section {
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    section.hidden {
+      display: none;
+    }
+
+    h2 {
+      margin: 0 0 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      scroll-margin-top: 8rem;
+      color: var(--fg);
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background: var(--gradient);
+      border-radius: 1px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    figure {
+      margin: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    figure:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 40px var(--shadow);
+      border-color: var(--accent);
+    }
+
+    .image-container {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+      background: var(--bg-light);
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    figure:hover img {
+      transform: scale(1.05);
+    }
+
+    .loading-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+    }
+
+    .loading-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-placeholder {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    figcaption {
+      padding: 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      position: relative;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); }
+      to { transform: scale(1); }
+    }
+
+    .modal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .modal-caption {
+      position: absolute;
+      bottom: -3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      color: var(--fg);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .close {
+      position: absolute;
+      top: -3rem;
+      right: 0;
+      color: var(--fg);
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .close:hover {
+      background: var(--surface-hover);
+      transform: scale(1.1);
+    }
+
+    .no-results {
+      text-align: center;
+      color: var(--fg-muted);
+      font-size: 1.1rem;
+      margin: 4rem 0;
+      display: none;
+    }
+
+    .no-results.visible {
+      display: block;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      main {
+        padding: 1rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .stats {
+        justify-content: center;
+      }
+
+      nav {
+        max-height: 150px;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* Focus styles for keyboard navigation */
+    nav a:focus,
+    figure:focus,
+    #searchInput:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>GenAI Image Showdown</h1>
+      
+      <div class="search-container">
+        <div class="search-icon">🔍</div>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search prompts..." 
+          aria-label="Search prompts"
+        />
+      </div>
+
+      <nav id="nav" role="navigation" aria-label="Prompt navigation"></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number" id="totalPrompts">0</div>
+        <div class="stat-label">Prompts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="totalImages">0</div>
+        <div class="stat-label">Images</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="totalModels">0</div>
+        <div class="stat-label">Models</div>
+      </div>
+    </div>
+
+    <div id="content"></div>
+
+    <div class="no-results" id="noResults">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+      <div>No prompts match your search</div>
+      <div style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--fg-muted);">
+        Try adjusting your search terms
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for image viewing -->
+  <div id="imageModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <span class="close" aria-label="Close modal">&times;</span>
+      <img id="modalImage" alt="" />
+      <div class="modal-caption" id="modalCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    /* =============================================================
+       1) EDIT YOUR DATA BELOW
+       ----------------------------------------------------------------
+       Each prompt gets its own object with:
+         - prompt  : string (what you asked the models)
+         - images  : array of { model: string, src: string }
+       Place the matching JPEG/PNG files in your repo (e.g. under
+       "assets/"), then reference the relative path in `src`.
+    ============================================================= */
+
+    const examples = [
+      {
+        prompt: "A robot cat sitting on a stack of pancakes",
+        images: [
+          { model: "OpenAI DALL-E 3", src: "assets/robot_cat/dalle3.jpg" },
+          { model: "Midjourney v6", src: "assets/robot_cat/midjourney.jpg" },
+          { model: "Stable Diffusion XL", src: "assets/robot_cat/sdxl.jpg" },
+          { model: "Adobe Firefly", src: "assets/robot_cat/firefly.jpg" },
+        ],
+      },
+      {
+        prompt: "A photorealistic portrait of an ancient astronaut riding a dinosaur in a cyberpunk city",
+        images: [
+          { model: "OpenAI DALL-E 3", src: "assets/astronaut/dalle3.jpg" },
+          { model: "Midjourney v6", src: "assets/astronaut/midjourney.jpg" },
+          { model: "Leonardo AI", src: "assets/astronaut/leonardo.jpg" },
+          { model: "Flux.1 Pro", src: "assets/astronaut/flux.jpg" },
+        ],
+      },
+      {
+        prompt: "A serene Japanese garden with cherry blossoms reflecting in a koi pond at sunset",
+        images: [
+          { model: "OpenAI DALL-E 3", src: "assets/garden/dalle3.jpg" },
+          { model: "Midjourney v6", src: "assets/garden/midjourney.jpg" },
+          { model: "Stable Diffusion XL", src: "assets/garden/sdxl.jpg" },
+        ],
+      },
+      // 👉 TODO: Add your own examples here 👈
+    ];
+
+    /* =============================================================
+       2) APPLICATION CODE (no changes needed unless customizing)
+    ============================================================= */
+
+    class ImageShowdown {
+      constructor() {
+        this.examples = examples;
+        this.filteredExamples = [...examples];
+        this.modal = document.getElementById('imageModal');
+        this.modalImage = document.getElementById('modalImage');
+        this.modalCaption = document.getElementById('modalCaption');
+        
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.updateStats();
+        this.buildNav();
+        this.buildContent();
+      }
+
+      setupEventListeners() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+
+        // Modal functionality
+        const closeBtn = document.querySelector('.close');
+        closeBtn.addEventListener('click', () => this.closeModal());
+        
+        this.modal.addEventListener('click', (e) => {
+          if (e.target === this.modal) this.closeModal();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') this.closeModal();
+        });
+
+        // Handle image loading errors
+        document.addEventListener('error', (e) => {
+          if (e.target.tagName === 'IMG') {
+            this.handleImageError(e.target);
+          }
+        }, true);
+      }
+
+      slugify(text) {
+        return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      }
+
+      updateStats() {
+        const totalPrompts = this.examples.length;
+        const totalImages = this.examples.reduce((sum, ex) => sum + ex.images.length, 0);
+        const allModels = new Set();
+        this.examples.forEach(ex => {
+          ex.images.forEach(img => allModels.add(img.model));
+        });
+
+        document.getElementById('totalPrompts').textContent = totalPrompts;
+        document.getElementById('totalImages').textContent = totalImages;
+        document.getElementById('totalModels').textContent = allModels.size;
+      }
+
+      handleSearch(query) {
+        const searchTerm = query.toLowerCase().trim();
+        
+        if (!searchTerm) {
+          this.filteredExamples = [...this.examples];
+        } else {
+          this.filteredExamples = this.examples.filter(ex => 
+            ex.prompt.toLowerCase().includes(searchTerm) ||
+            ex.images.some(img => img.model.toLowerCase().includes(searchTerm))
+          );
+        }
+
+        this.updateNavigation();
+        this.updateContent();
+        this.updateNoResults();
+      }
+
+      updateNavigation() {
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+          const href = link.getAttribute('href').substring(1); // Remove #
+          const isVisible = this.filteredExamples.some(ex => this.slugify(ex.prompt) === href);
+          link.classList.toggle('hidden', !isVisible);
+        });
+      }
+
+      updateContent() {
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+          const id = section.id;
+          const isVisible = this.filteredExamples.some(ex => this.slugify(ex.prompt) === id);
+          section.classList.toggle('hidden', !isVisible);
+        });
+      }
+
+      updateNoResults() {
+        const noResults = document.getElementById('noResults');
+        noResults.classList.toggle('visible', this.filteredExamples.length === 0);
+      }
+
+      buildNav() {
+        const nav = document.getElementById("nav");
+        this.examples.forEach((ex) => {
+          const a = document.createElement("a");
+          a.href = "#" + this.slugify(ex.prompt);
+          a.textContent = ex.prompt.length > 50 ? ex.prompt.slice(0, 47) + "…" : ex.prompt;
+          a.setAttribute('aria-label', `Jump to: ${ex.prompt}`);
+          nav.appendChild(a);
+        });
+      }
+
+      buildContent() {
+        const content = document.getElementById("content");
+        this.examples.forEach((ex, index) => {
+          const section = document.createElement("section");
+          section.id = this.slugify(ex.prompt);
+          section.style.animationDelay = `${index * 0.1}s`;
+
+          const h = document.createElement("h2");
+          h.textContent = ex.prompt;
+          section.appendChild(h);
+
+          const grid = document.createElement("div");
+          grid.className = "grid";
+
+          ex.images.forEach((img) => {
+            const fig = document.createElement("figure");
+            fig.setAttribute('tabindex', '0');
+            fig.setAttribute('role', 'button');
+            fig.setAttribute('aria-label', `View ${img.model} image for: ${ex.prompt}`);
+
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "image-container";
+
+            // Loading placeholder
+            const loadingPlaceholder = document.createElement("div");
+            loadingPlaceholder.className = "loading-placeholder";
+            loadingPlaceholder.innerHTML = '<div class="loading-spinner"></div>Loading...';
+            imageContainer.appendChild(loadingPlaceholder);
+
+            const image = document.createElement("img");
+            image.src = img.src;
+            image.alt = `${img.model} – ${ex.prompt}`;
+            image.style.display = 'none';
+            
+            image.onload = () => {
+              loadingPlaceholder.style.display = 'none';
+              image.style.display = 'block';
+            };
+
+            imageContainer.appendChild(image);
+            fig.appendChild(imageContainer);
+
+            const cap = document.createElement("figcaption");
+            cap.textContent = img.model;
+            fig.appendChild(cap);
+
+            // Click handler for modal
+            fig.addEventListener('click', () => this.openModal(img.src, `${img.model} – ${ex.prompt}`));
+            fig.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.openModal(img.src, `${img.model} – ${ex.prompt}`);
+              }
+            });
+
+            grid.appendChild(fig);
+          });
+
+          section.appendChild(grid);
+          content.appendChild(section);
+        });
+      }
+
+      handleImageError(img) {
+        const container = img.closest('.image-container');
+        const loadingPlaceholder = container.querySelector('.loading-placeholder');
+        
+        if (loadingPlaceholder) {
+          loadingPlaceholder.innerHTML = '❌ Failed to load';
+          loadingPlaceholder.classList.add('error-placeholder');
+        }
+        
+        img.style.display = 'none';
+      }
+
+      openModal(src, caption) {
+        this.modalImage.src = src;
+        this.modalImage.alt = caption;
+        this.modalCaption.textContent = caption;
+        this.modal.classList.add('active');
+        this.modal.setAttribute('aria-hidden', 'false');
+        
+        // Focus management
+        this.modal.focus();
+      }
+
+      closeModal() {
+        this.modal.classList.remove('active');
+        this.modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', () => {
+      new ImageShowdown();
+    });
+  </script>
+</body>
+</html>

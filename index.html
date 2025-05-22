@@ -73,13 +73,16 @@ main{max-width:1400px;margin:0 auto;padding:2rem}
 .stat-number{font-size:1.5rem;font-weight:700;color:var(--accent)}
 .stat-label{font-size:.8rem;color:var(--fg-muted);text-transform:uppercase}
 
-/* ───────── Model score chart ───────── */
-.chart-wrapper{margin-bottom:2rem}
-#scoreCategorySelect{
-  background:var(--bg-light);color:var(--fg);border:1px solid var(--border);
-  border-radius:8px;padding:.4rem .6rem;font-size:.85rem;margin-bottom:.75rem;
+/* ───────── Model score table ───────── */
+.model-scores{margin-bottom:2rem;overflow-x:auto}
+.model-score-table{width:100%;border-collapse:collapse;min-width:600px}
+.model-score-table th,.model-score-table td{
+  padding:.5rem .75rem;border:1px solid var(--border);text-align:center;
+  font-size:.85rem
 }
-.chart-container{position:relative;width:100%;max-width:100%;}
+.model-score-table th{background:var(--surface)}
+.model-score-table tbody tr:nth-child(even){background:var(--bg-light)}
+.model-score-table .avg-cell{font-weight:700;color:var(--accent)}
 
 section{margin-bottom:4rem;opacity:0;transform:translateY(20px);
          animation:fadeInUp .6s ease forwards}
@@ -169,6 +172,7 @@ figcaption{
 .no-results{text-align:center;color:var(--fg-muted);font-size:1.1rem;
             margin:4rem 0;display:none}.no-results.visible{display:block}
 
+/* ───── Responsive ───── */
 @media(max-width:768px){
   header{padding:1rem}
   header h1{font-size:1.5rem}
@@ -177,6 +181,7 @@ figcaption{
   .stats{justify-content:center}
   nav{max-height:150px}
 }
+/* Accessibility */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms!important;
    animation-iteration-count:1!important;transition-duration:0.01ms!important}
@@ -185,8 +190,6 @@ figcaption{
 nav a:focus,figure:focus,#searchInput:focus{
   outline:2px solid var(--accent);outline-offset:2px}
 </style>
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <header>
@@ -203,7 +206,7 @@ nav a:focus,figure:focus,#searchInput:focus{
 </header>
 
 <main>
-  <!-- ───── Top-level statistics ───── -->
+  <!-- ───── Top‑level statistics ───── -->
   <div class="stats">
     <div class="stat">
       <div class="stat-number" id="totalPrompts">0</div>
@@ -219,21 +222,8 @@ nav a:focus,figure:focus,#searchInput:focus{
     </div>
   </div>
 
-  <!-- ───── Per-model score chart ───── -->
-  <div class="chart-wrapper">
-    <label for="scoreCategorySelect" style="display:block;margin-bottom:.25rem;font-size:.85rem;color:var(--fg-muted)">Score Category</label>
-    <select id="scoreCategorySelect">
-      <option value="avg">Overall</option>
-      <option value="instruction">Instruction</option>
-      <option value="consistency">Consistency</option>
-      <option value="realism">Realism</option>
-      <option value="animation">Animation</option>
-      <option value="creativity">Creativity</option>
-    </select>
-    <div class="chart-container">
-      <canvas id="modelScoreChart" height="120"></canvas>
-    </div>
-  </div>
+  <!-- ───── Per‑model score table ───── -->
+  <div class="model-scores" id="modelScores"></div>
 
   <div id="content"></div>
 
@@ -390,7 +380,7 @@ class MediaShowdown{
     document.getElementById('totalModels').textContent=models.size;
   }
 
-  /* ── Per-model score table ── */
+  /* ── Per‑model score table ── */
   buildScoreTable(){
     const container=document.getElementById('modelScores');
     container.innerHTML='';
@@ -536,7 +526,7 @@ class MediaShowdown{
       });
 
       sec.appendChild(grid);content.appendChild(sec);
-    });
+   
   }
 
   /* ── Error placeholder ── */
@@ -578,3 +568,4 @@ document.addEventListener('DOMContentLoaded',()=>new MediaShowdown());
 </script>
 </body>
 </html>
+

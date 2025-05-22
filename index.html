@@ -1,11 +1,11 @@
 <!--
-  GenAI Media Showdown – Images + Videos
-  ======================================
+  GenAI Media Showdown – Images + Videos (reference centred)
+  ==========================================================
   Drop this file at the root of a GitHub repository (e.g. main branch)
-  and enable GitHub Pages → Deploy from branch.  
+  and enable GitHub Pages → Deploy from branch.
   Put your media under an assets/ folder (or anywhere you like) and
   fill in the examples array below with your own prompts, model names
-  and file paths ( .jpg / .png / .mp4 / .webm …).  
+  and file paths ( .jpg / .png / .mp4 / .webm …).
   One self-contained file – no build step required.
 -->
 <!DOCTYPE html>
@@ -85,8 +85,17 @@ h2::after{
   background:var(--gradient);border-radius:1px
 }
 
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:1.5rem}
+/* grid with reference first & centred */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.5rem
+}
+figure.reference{
+  grid-column:1 / -1;          /* span the whole row */
+  justify-self:center;         /* centre horizontally */
+  max-width:380px;             /* optional: limit width */
+}
 
 figure{
   margin:0;background:var(--surface);border:1px solid var(--border);
@@ -232,8 +241,8 @@ const examples = [
     prompt:"Realistic woman in mid 40s walking through a city street in New York",
     images:[
       {model:"Reference Image",src:"examples/woman_40_walking_nyc/original.jpeg"},
-      {model:"Veo 3 - v1",src:"examples/woman_40_walking_nyc/veo3_1.mp4"},
-      {model:"Veo 3 - v1",src:"examples/woman_40_walking_nyc/veo3_2.mp4"},
+      {model:"Veo 3 – v1",src:"examples/woman_40_walking_nyc/veo3_1.mp4"},
+      {model:"Veo 3 – v2",src:"examples/woman_40_walking_nyc/veo3_2.mp4"},
       {model:"Veo 2",src:"examples/woman_40_walking_nyc/veo2.mp4"},
       {model:"HunYuan",src:"examples/woman_40_walking_nyc/hunyuan.mp4"},
       {model:"Wan 2.1",src:"examples/woman_40_walking_nyc/wan21.mp4"},
@@ -246,8 +255,8 @@ const examples = [
     prompt:"A nature scene with a blue hummingbird moving towards a flower then flying away",
     images:[
       {model:"Reference Image",src:"examples/humming_bird_flying/original.jpeg"},
-      {model:"Veo 3 - v1",src:"examples/humming_bird_flying/veo3_1.mp4"},
-      {model:"Veo 3 - v2",src:"examples/humming_bird_flying/veo3_2.mp4"},
+      {model:"Veo 3 – v1",src:"examples/humming_bird_flying/veo3_1.mp4"},
+      {model:"Veo 3 – v2",src:"examples/humming_bird_flying/veo3_2.mp4"},
       {model:"Veo 2",src:"examples/humming_bird_flying/veo2.mp4"},
       {model:"HunYuan",src:"examples/humming_bird_flying/hunyuan.mp4"},
       {model:"Wan 2.1",src:"examples/humming_bird_flying/wan21.mp4"},
@@ -260,8 +269,8 @@ const examples = [
     prompt:"A first person view of a home chef chopping onions",
     images:[
       {model:"Reference Image",src:"examples/onions/original.jpeg"},
-      {model:"Veo 3 - v1",src:"examples/onions/veo3_1.mp4"},
-      {model:"Veo 3 - v2",src:"examples/onions/veo3_2.mp4"},
+      {model:"Veo 3 – v1",src:"examples/onions/veo3_1.mp4"},
+      {model:"Veo 3 – v2",src:"examples/onions/veo3_2.mp4"},
       {model:"Veo 2",src:"examples/onions/veo2.mp4"},
       {model:"HunYuan",src:"examples/onions/hunyuan.mp4"},
       {model:"Wan 2.1",src:"examples/onions/wan21.mp4"},
@@ -274,8 +283,6 @@ const examples = [
     prompt:"Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
     images:[
       {model:"Reference Image",src:"examples/anime/original.jpeg"},
-      {model:"Reference 1",src:"examples/anime/ref1.png"},
-      {model:"Reference 2",src:"examples/anime/ref2.png"},
       {model:"Veo 3 – v1",src:"examples/anime/veo3_1.mp4"},
       {model:"Veo 3 – v2",src:"examples/anime/veo3_2.mp4"}
     ],
@@ -393,8 +400,13 @@ class MediaShowdown{
       const h=document.createElement('h2');h.textContent=ex.prompt;sec.appendChild(h);
       const grid=document.createElement('div');grid.className='grid';
 
-      ex.images.forEach(img=>{
+      ex.images.forEach((img,idx)=>{
         const fig=document.createElement('figure');
+
+        /* detect reference image */
+        const isRef=/reference/i.test(img.model)||idx===0;
+        if(isRef) fig.classList.add('reference');
+
         fig.tabIndex=0;fig.role='button';
         fig.setAttribute('aria-label',`View ${img.model} media for: ${ex.prompt}`);
 

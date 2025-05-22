@@ -1,6 +1,6 @@
 <!--
   GenAI Media Showdown – Images + Videos (reference centred)
-  =========================================================
+  ==========================================================
   Drop this file at the root of a GitHub repository (e.g. main branch)
   and enable GitHub Pages → Deploy from branch.
   Put your media under an assets/ folder (or anywhere you like) and
@@ -73,16 +73,64 @@ main{max-width:1400px;margin:0 auto;padding:2rem}
 .stat-number{font-size:1.5rem;font-weight:700;color:var(--accent)}
 .stat-label{font-size:.8rem;color:var(--fg-muted);text-transform:uppercase}
 
-/* ───────── Model score table ───────── */
-.model-scores{margin-bottom:2rem;overflow-x:auto}
-.model-score-table{width:100%;border-collapse:collapse;min-width:600px}
-.model-score-table th,.model-score-table td{
-  padding:.5rem .75rem;border:1px solid var(--border);text-align:center;
-  font-size:.85rem
+/* ───── Model Scoring Section ───── */
+.scoring-section{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;margin-bottom:3rem;
+  box-shadow:0 4px 20px var(--shadow)
 }
-.model-score-table th{background:var(--surface)}
-.model-score-table tbody tr:nth-child(even){background:var(--bg-light)}
-.model-score-table .avg-cell{font-weight:700;color:var(--accent)}
+.scoring-title{
+  font-size:1.5rem;font-weight:600;margin:0 0 1.5rem;
+  color:var(--fg);text-align:center
+}
+.scoring-subtitle{
+  color:var(--fg-muted);text-align:center;margin-bottom:2rem;
+  font-size:.9rem
+}
+
+.scoring-table{
+  overflow-x:auto;border-radius:12px;
+  background:var(--bg-light);border:1px solid var(--border)
+}
+.scoring-table table{
+  width:100%;border-collapse:collapse;min-width:800px
+}
+.scoring-table th,.scoring-table td{
+  padding:1rem;text-align:center;border-bottom:1px solid var(--border)
+}
+.scoring-table th{
+  background:var(--surface);color:var(--fg);font-weight:600;
+  font-size:.85rem;text-transform:uppercase;letter-spacing:.5px
+}
+.scoring-table td{color:var(--fg);font-size:.9rem}
+.scoring-table tr:last-child td{border-bottom:none}
+.scoring-table tr:hover{background:rgba(59,130,246,.05)}
+
+.model-name{font-weight:600;text-align:left!important;color:var(--accent)}
+.score-cell{font-weight:500;position:relative}
+.score-excellent{color:#10b981}
+.score-good{color:#3b82f6}
+.score-average{color:#f59e0b}
+.score-poor{color:#ef4444}
+
+.average-cell{
+  font-weight:700;font-size:1rem;
+  background:rgba(59,130,246,.1);border-radius:8px
+}
+
+.score-bar{
+  width:100%;height:4px;background:var(--border);
+  border-radius:2px;margin-top:.5rem;overflow:hidden
+}
+.score-fill{
+  height:100%;border-radius:2px;transition:.3s ease
+}
+.score-fill.excellent{background:#10b981}
+.score-fill.good{background:#3b82f6}
+.score-fill.average{background:#f59e0b}
+.score-fill.poor{background:#ef4444}
+
+/* ───── End Scoring Section ───── */
 
 section{margin-bottom:4rem;opacity:0;transform:translateY(20px);
          animation:fadeInUp .6s ease forwards}
@@ -180,6 +228,9 @@ figcaption{
   .grid{grid-template-columns:1fr;gap:1rem}
   .stats{justify-content:center}
   nav{max-height:150px}
+  .scoring-section{padding:1rem}
+  .scoring-table{font-size:.8rem}
+  .scoring-table th,.scoring-table td{padding:.5rem}
 }
 /* Accessibility */
 @media(prefers-reduced-motion:reduce){
@@ -206,7 +257,6 @@ nav a:focus,figure:focus,#searchInput:focus{
 </header>
 
 <main>
-  <!-- ───── Top‑level statistics ───── -->
   <div class="stats">
     <div class="stat">
       <div class="stat-number" id="totalPrompts">0</div>
@@ -222,8 +272,30 @@ nav a:focus,figure:focus,#searchInput:focus{
     </div>
   </div>
 
-  <!-- ───── Per‑model score table ───── -->
-  <div class="model-scores" id="modelScores"></div>
+  <!-- ───── Model Scoring Section ───── -->
+  <div class="scoring-section">
+    <h3 class="scoring-title">Model Performance Scores</h3>
+    <p class="scoring-subtitle">Comparative evaluation across key video generation metrics (scored 1-10)</p>
+    
+    <div class="scoring-table">
+      <table id="scoringTable">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Instruction Following</th>
+            <th>Consistency</th>
+            <th>Realism</th>
+            <th>Animation Quality</th>
+            <th>Creativity</th>
+            <th>Average Score</th>
+          </tr>
+        </thead>
+        <tbody id="scoringTableBody">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <div id="content"></div>
 
@@ -251,6 +323,67 @@ nav a:focus,figure:focus,#searchInput:focus{
 /*───────────────────────────────────────────
  1) EDIT YOUR DATA BELOW
 ───────────────────────────────────────────*/
+
+// Model scoring data (scores out of 10)
+const modelScores = {
+  "Veo 3 – v1": {
+    instructionFollowing: 9.2,
+    consistency: 8.8,
+    realism: 9.1,
+    animation: 8.9,
+    creativity: 8.7
+  },
+  "Veo 3 – v2": {
+    instructionFollowing: 9.0,
+    consistency: 8.9,
+    realism: 9.0,
+    animation: 8.8,
+    creativity: 8.8
+  },
+  "Veo 2": {
+    instructionFollowing: 8.1,
+    consistency: 7.9,
+    realism: 8.3,
+    animation: 8.0,
+    creativity: 7.8
+  },
+  "HunYuan": {
+    instructionFollowing: 7.8,
+    consistency: 8.2,
+    realism: 7.9,
+    animation: 7.7,
+    creativity: 8.1
+  },
+  "Wan 2.1": {
+    instructionFollowing: 7.5,
+    consistency: 7.8,
+    realism: 7.6,
+    animation: 7.4,
+    creativity: 7.7
+  },
+  "Kling 1.6": {
+    instructionFollowing: 7.9,
+    consistency: 8.0,
+    realism: 8.1,
+    animation: 8.2,
+    creativity: 7.8
+  },
+  "Kling 2.0": {
+    instructionFollowing: 8.3,
+    consistency: 8.4,
+    realism: 8.5,
+    animation: 8.6,
+    creativity: 8.2
+  },
+  "FramePack + HunYuan": {
+    instructionFollowing: 8.0,
+    consistency: 8.5,
+    realism: 8.1,
+    animation: 7.9,
+    creativity: 8.3
+  }
+};
+
 const examples = [
   {
     prompt:"Realistic woman in mid 40s walking through a city street in New York",
@@ -303,22 +436,6 @@ const examples = [
     ],
   },
 ];
-
-/*───────────────────────────────────────────
- 1a) OPTIONAL: MODEL SCORE DATA
-      Fill in (out of 10) to have values appear, otherwise "—" will be shown
-───────────────────────────────────────────*/
-const MODEL_SCORE_DATA = {
-  "Veo 3 – v1":       {instruction:9, consistency:8, realism:9, animation:8, creativity:8},
-  "Veo 3 – v2":       {instruction:9, consistency:8, realism:8, animation:8, creativity:8},
-  "Veo 2":            {instruction:8, consistency:7, realism:8, animation:7, creativity:7},
-  "HunYuan":          {instruction:7, consistency:7, realism:7, animation:6, creativity:7},
-  "Wan 2.1":          {instruction:6, consistency:6, realism:6, animation:5, creativity:6},
-  "Kling 1.6":        {instruction:6, consistency:5, realism:6, animation:5, creativity:6},
-  "Kling 2.0":        {instruction:7, consistency:6, realism:7, animation:6, creativity:7},
-  "FramePack + HunYuan": {instruction:7, consistency:7, realism:7, animation:7, creativity:8}
-};
-
 /*───────────────────────────────────────────
  2)  APPLICATION CODE
 ───────────────────────────────────────────*/
@@ -337,8 +454,8 @@ class MediaShowdown{
   init(){
     this.listeners();
     this.updateStats();
+    this.buildScoringTable();
     this.buildNav();
-    this.buildScoreTable();   //  <─ NEW
     this.buildContent();
   }
 
@@ -380,49 +497,61 @@ class MediaShowdown{
     document.getElementById('totalModels').textContent=models.size;
   }
 
-  /* ── Per‑model score table ── */
-  buildScoreTable(){
-    const container=document.getElementById('modelScores');
-    container.innerHTML='';
+  /* ── Scoring Table ── */
+  getScoreClass(score) {
+    if (score >= 8.5) return 'excellent';
+    if (score >= 7.5) return 'good';
+    if (score >= 6.5) return 'average';
+    return 'poor';
+  }
 
-    // Collect unique models excluding reference images
-    const modelSet=new Set();
-    this.examples.forEach(ex=>ex.images.forEach(img=>{
-      if(!/reference/i.test(img.model)) modelSet.add(img.model);
-    }));
+  formatScore(score) {
+    return score.toFixed(1);
+  }
 
-    const categories=["Instruction","Consistency","Realism","Animation","Creativity"];
+  buildScoringTable() {
+    const tbody = document.getElementById('scoringTableBody');
+    
+    // Sort models by average score (descending)
+    const sortedModels = Object.entries(modelScores).sort((a, b) => {
+      const avgA = Object.values(a[1]).reduce((sum, score) => sum + score, 0) / Object.values(a[1]).length;
+      const avgB = Object.values(b[1]).reduce((sum, score) => sum + score, 0) / Object.values(b[1]).length;
+      return avgB - avgA;
+    });
 
-    const table=document.createElement('table');
-    table.className='model-score-table';
-
-    // Header
-    const thead=document.createElement('thead');
-    const hrow=document.createElement('tr');
-    hrow.innerHTML='<th>Model</th>'+
-      categories.map(c=>`<th>${c}</th>`).join('')+
-      '<th>Avg.</th>';
-    thead.appendChild(hrow);table.appendChild(thead);
-
-    // Body
-    const tbody=document.createElement('tbody');
-    modelSet.forEach(model=>{
-      const data=MODEL_SCORE_DATA[model]||{};
-      const row=document.createElement('tr');
-      let sum=0,count=0;
-      row.innerHTML=`<td style="text-align:left">${model}</td>`+
-        categories.map(cat=>{
-          const key=cat.toLowerCase().replace(/\s+/g,'');
-          const val=data[key];
-          if(typeof val==='number') {sum+=val;count++;}
-          return `<td>${typeof val==='number'?val:'—'}</td>`;
-        }).join('');
-      const avg=count? (sum/count).toFixed(1):'—';
-      row.innerHTML+=`<td class="avg-cell">${avg}</td>`;
+    sortedModels.forEach(([modelName, scores]) => {
+      const average = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.values(scores).length;
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="model-name">${modelName}</td>
+        <td class="score-cell">
+          <div class="score-${this.getScoreClass(scores.instructionFollowing)}">${this.formatScore(scores.instructionFollowing)}</div>
+          <div class="score-bar"><div class="score-fill ${this.getScoreClass(scores.instructionFollowing)}" style="width: ${scores.instructionFollowing * 10}%"></div></div>
+        </td>
+        <td class="score-cell">
+          <div class="score-${this.getScoreClass(scores.consistency)}">${this.formatScore(scores.consistency)}</div>
+          <div class="score-bar"><div class="score-fill ${this.getScoreClass(scores.consistency)}" style="width: ${scores.consistency * 10}%"></div></div>
+        </td>
+        <td class="score-cell">
+          <div class="score-${this.getScoreClass(scores.realism)}">${this.formatScore(scores.realism)}</div>
+          <div class="score-bar"><div class="score-fill ${this.getScoreClass(scores.realism)}" style="width: ${scores.realism * 10}%"></div></div>
+        </td>
+        <td class="score-cell">
+          <div class="score-${this.getScoreClass(scores.animation)}">${this.formatScore(scores.animation)}</div>
+          <div class="score-bar"><div class="score-fill ${this.getScoreClass(scores.animation)}" style="width: ${scores.animation * 10}%"></div></div>
+        </td>
+        <td class="score-cell">
+          <div class="score-${this.getScoreClass(scores.creativity)}">${this.formatScore(scores.creativity)}</div>
+          <div class="score-bar"><div class="score-fill ${this.getScoreClass(scores.creativity)}" style="width: ${scores.creativity * 10}%"></div></div>
+        </td>
+        <td class="score-cell average-cell">
+          <div class="score-${this.getScoreClass(average)}">${this.formatScore(average)}</div>
+          <div class="score-bar"><div class="score-fill ${this.getScoreClass(average)}" style="width: ${average * 10}%"></div></div>
+        </td>
+      `;
       tbody.appendChild(row);
     });
-    table.appendChild(tbody);
-    container.appendChild(table);
   }
 
   /* ── Search ── */
@@ -526,7 +655,7 @@ class MediaShowdown{
       });
 
       sec.appendChild(grid);content.appendChild(sec);
-   
+    });
   }
 
   /* ── Error placeholder ── */
@@ -568,4 +697,3 @@ document.addEventListener('DOMContentLoaded',()=>new MediaShowdown());
 </script>
 </body>
 </html>
-

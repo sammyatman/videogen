@@ -96,17 +96,35 @@ main{max-width:1400px;margin:0 auto;padding:2rem}
   width:100%;border-collapse:collapse;min-width:800px
 }
 .scoring-table th,.scoring-table td{
-  padding:1rem;text-align:center;border-bottom:1px solid var(--border)
+  padding:1rem;text-align:center;border-bottom:1px solid var(--border);
+  width:14.28%;position:relative
+}
+.scoring-table th:first-child,.scoring-table td:first-child{
+  width:20%;text-align:left
+}
+.scoring-table th:not(:first-child),.scoring-table td:not(:first-child){
+  width:13.33%
 }
 .scoring-table th{
   background:var(--surface);color:var(--fg);font-weight:600;
-  font-size:.85rem;text-transform:uppercase;letter-spacing:.5px
+  font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;
+  cursor:pointer;transition:.2s;user-select:none
 }
+.scoring-table th:hover{
+  background:var(--surface-hover);color:var(--accent)
+}
+.scoring-table th.sortable{position:relative}
+.sort-indicator{
+  position:absolute;right:.5rem;top:50%;transform:translateY(-50%);
+  font-size:.7rem;opacity:.5;transition:.2s
+}
+.scoring-table th.sort-asc .sort-indicator{opacity:1;color:var(--accent)}
+.scoring-table th.sort-desc .sort-indicator{opacity:1;color:var(--accent);transform:translateY(-50%) rotate(180deg)}
 .scoring-table td{color:var(--fg);font-size:.9rem}
 .scoring-table tr:last-child td{border-bottom:none}
 .scoring-table tr:hover{background:rgba(59,130,246,.05)}
 
-.model-name{font-weight:600;text-align:left!important;color:var(--accent)}
+.model-name{font-weight:600;color:var(--accent)}
 .score-cell{font-weight:500;position:relative}
 .score-excellent{color:#10b981}
 .score-good{color:#3b82f6}
@@ -254,7 +272,57 @@ figcaption{
 .score-good{background:rgba(59,130,246,.2);color:#3b82f6}
 .score-average{background:rgba(245,158,11,.2);color:#f59e0b}
 .score-poor{background:rgba(239,68,68,.2);color:#ef4444}
-.score-comment{color:var(--fg-muted);line-height:1.4}
+.score-comment{color:var(--fg-muted);line-height:1.4;margin-bottom:.75rem}
+
+/* ───── Collapsible Metrics Section ───── */
+.metrics-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:.5rem 0;border-top:1px solid var(--border);
+  margin-top:.5rem;transition:.2s
+}
+.metrics-toggle:hover{color:var(--accent)}
+.metrics-toggle-text{
+  display:flex;align-items:center;gap:.5rem;font-size:.8rem;
+  font-weight:500;color:var(--fg-muted)
+}
+.bar-chart-icon{
+  width:16px;height:16px;display:flex;align-items:flex-end;gap:2px
+}
+.bar{
+  width:2px;background:var(--accent);border-radius:1px;transition:.2s
+}
+.bar:nth-child(1){height:6px}
+.bar:nth-child(2){height:10px}
+.bar:nth-child(3){height:8px}
+.bar:nth-child(4){height:12px}
+.bar:nth-child(5){height:4px}
+
+.toggle-arrow{
+  font-size:1rem;transition:transform .2s ease;color:var(--fg-muted)
+}
+.metrics-toggle.expanded .toggle-arrow{transform:rotate(180deg)}
+
+.metrics-details{
+  max-height:0;overflow:hidden;transition:max-height .3s ease-out;
+  background:var(--surface);border-radius:8px;margin-top:.5rem
+}
+.metrics-details.expanded{max-height:300px;padding:.75rem}
+
+.metric-item{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:.5rem;font-size:.75rem
+}
+.metric-item:last-child{margin-bottom:0}
+.metric-name{color:var(--fg);font-weight:500;text-transform:capitalize}
+.metric-score{display:flex;align-items:center;gap:.5rem}
+.metric-value{font-weight:600;min-width:24px;text-align:right}
+.metric-bar{
+  width:60px;height:4px;background:var(--border);border-radius:2px;
+  overflow:hidden;position:relative
+}
+.metric-bar-fill{
+  height:100%;border-radius:2px;transition:.3s ease
+}
 
 /* ───────── Modal ───────── */
 .modal{
@@ -329,9 +397,13 @@ figcaption{
   nav{max-height:150px}
   .scoring-section{padding:1rem}
   .scoring-table{font-size:.8rem}
-  .scoring-table th,.scoring-table td{padding:.5rem}
+  .scoring-table th,.scoring-table td{padding:.5rem .25rem}
+  .scoring-table th{font-size:.7rem}
+  .sort-indicator{right:.25rem;font-size:.6rem}
   .carousel-arrow{width:28px;height:28px;font-size:12px}
   .modal-carousel-arrow{width:36px;height:36px;font-size:14px}
+  .metrics-details{max-height:250px}
+  .metric-bar{width:40px}
 }
 /* Accessibility */
 @media(prefers-reduced-motion:reduce){
@@ -492,7 +564,14 @@ const modelScores = {
     realism: 8.1,
     animation: 7.9,
     creativity: 8.3
-  }
+  },
+  "CogVideoX 1.5": {
+    instructionFollowing: 8.0,
+    consistency: 8.5,
+    realism: 8.1,
+    animation: 7.9,
+    creativity: 8.3
+  },
 };
 
 const examples = [
@@ -512,7 +591,14 @@ const examples = [
           {src:"examples/woman_40_walking_nyc/veo3_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Outstanding realism and natural movement. Both versions capture the urban environment perfectly."
+        comment: "Outstanding realism and natural movement. Both versions capture the urban environment perfectly.",
+        metrics: {
+          instructionFollowing: 9.2,
+          consistency: 8.9,
+          realism: 9.3,
+          animation: 9.0,
+          creativity: 8.5
+        }
       },
       {
         model:"Veo 2",
@@ -521,7 +607,14 @@ const examples = [
           {src:"examples/woman_40_walking_nyc/veo2_2.mp4", label:"v2"}
         ],
         score: "good",
-        comment: "Good quality but slightly less natural than Veo 3. Some minor inconsistencies in background."
+        comment: "Good quality but slightly less natural than Veo 3. Some minor inconsistencies in background.",
+        metrics: {
+          instructionFollowing: 8.0,
+          consistency: 7.5,
+          realism: 8.4,
+          animation: 7.8,
+          creativity: 7.6
+        }
       },
       {
         model:"Sora",
@@ -530,37 +623,79 @@ const examples = [
           {src:"examples/woman_40_walking_nyc/sora_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Exceptional cinematic quality with great attention to lighting and atmosphere."
+        comment: "Exceptional cinematic quality with great attention to lighting and atmosphere.",
+        metrics: {
+          instructionFollowing: 8.7,
+          consistency: 8.5,
+          realism: 9.1,
+          animation: 8.6,
+          creativity: 9.2
+        }
       },
       {
         model:"Wan 2.1",
         src:"examples/woman_40_walking_nyc/wan21.webp",
         score: "poor",
-        comment: "Static output instead of video. Limited animation capabilities."
+        comment: "Static output instead of video. Limited animation capabilities.",
+        metrics: {
+          instructionFollowing: 7.2,
+          consistency: 7.8,
+          realism: 7.8,
+          animation: 6.0,
+          creativity: 7.0
+        }
       },
       {
         model:"Kling 1.6",
         src:"examples/woman_40_walking_nyc/kling16.mp4",
         score: "good",
-        comment: "Solid performance with good character consistency throughout the sequence."
+        comment: "Solid performance with good character consistency throughout the sequence.",
+        metrics: {
+          instructionFollowing: 8.1,
+          consistency: 8.3,
+          realism: 8.0,
+          animation: 8.5,
+          creativity: 7.7
+        }
       },
       {
         model:"Kling 2.0",
         src:"examples/woman_40_walking_nyc/kling20.mp4",
         score: "good",
-        comment: "Improved over 1.6 with better background detail and smoother motion."
+        comment: "Improved over 1.6 with better background detail and smoother motion.",
+        metrics: {
+          instructionFollowing: 8.5,
+          consistency: 8.6,
+          realism: 8.3,
+          animation: 8.8,
+          creativity: 8.0
+        }
       },
       {
         model:"CogVideoX 1.5",
         src:"examples/woman_40_walking_nyc/cogvideox15.mp4",
         score: "good",
-        comment: "Solid performance with good character consistency throughout the sequence."
+        comment: "Solid performance with good character consistency throughout the sequence.",
+        metrics: {
+          instructionFollowing: 7.8,
+          consistency: 8.0,
+          realism: 7.9,
+          animation: 7.6,
+          creativity: 7.5
+        }
       },
       {
         model:"FramePack + HunYuan",
         src:"examples/woman_40_walking_nyc/HYFramepack.mp4",
         score: "good",
-        comment: "Enhanced version shows significant improvement over base HunYuan model."
+        comment: "Enhanced version shows significant improvement over base HunYuan model.",
+        metrics: {
+          instructionFollowing: 8.2,
+          consistency: 8.7,
+          realism: 8.0,
+          animation: 7.8,
+          creativity: 8.1
+        }
       }
     ],
   },
@@ -580,7 +715,14 @@ const examples = [
           {src:"examples/humming_bird_flying/veo3_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Stunning detail in wing movement and natural flight patterns. Beautiful color accuracy."
+        comment: "Stunning detail in wing movement and natural flight patterns. Beautiful color accuracy.",
+        metrics: {
+          instructionFollowing: 9.0,
+          consistency: 8.8,
+          realism: 8.9,
+          animation: 9.2,
+          creativity: 8.8
+        }
       },
       {
         model:"Veo 2",
@@ -589,7 +731,14 @@ const examples = [
           {src:"examples/humming_bird_flying/veo2_2.mp4", label:"v2"}
         ],
         score: "good",
-        comment: "Good attempt at capturing rapid wing movement, though less refined than Veo 3."
+        comment: "Good attempt at capturing rapid wing movement, though less refined than Veo 3.",
+        metrics: {
+          instructionFollowing: 8.2,
+          consistency: 8.0,
+          realism: 8.1,
+          animation: 8.3,
+          creativity: 7.9
+        }
       },
       {
         model:"Sora",
@@ -598,37 +747,79 @@ const examples = [
           {src:"examples/humming_bird_flying/sora_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Exceptional biological accuracy and fluid motion. Great depth of field effects."
+        comment: "Exceptional biological accuracy and fluid motion. Great depth of field effects.",
+        metrics: {
+          instructionFollowing: 8.3,
+          consistency: 8.1,
+          realism: 8.5,
+          animation: 8.2,
+          creativity: 8.7
+        }
       },
       {
         model:"Wan 2.1",
         src:"examples/humming_bird_flying/wan21.webp",
         score: "poor",
-        comment: "Static result fails to show any movement. Not suitable for motion scenes."
+        comment: "Static result fails to show any movement. Not suitable for motion scenes.",
+        metrics: {
+          instructionFollowing: 7.8,
+          consistency: 7.8,
+          realism: 7.4,
+          animation: 6.5,
+          creativity: 7.2
+        }
       },
       {
         model:"Kling 1.6",
         src:"examples/humming_bird_flying/kling16.mp4",
         score: "average",
-        comment: "Decent bird animation but struggles with rapid wing movement physics."
+        comment: "Decent bird animation but struggles with rapid wing movement physics.",
+        metrics: {
+          instructionFollowing: 7.7,
+          consistency: 7.8,
+          realism: 8.2,
+          animation: 7.9,
+          creativity: 7.9
+        }
       },
       {
         model:"Kling 2.0",
         src:"examples/humming_bird_flying/kling20.mp4",
         score: "good",
-        comment: "Notable improvement in wing detail and overall scene composition."
+        comment: "Notable improvement in wing detail and overall scene composition.",
+        metrics: {
+          instructionFollowing: 8.1,
+          consistency: 8.2,
+          realism: 8.7,
+          animation: 8.4,
+          creativity: 8.4
+        }
       },
       {
         model:"CogVideoX 1.5",
         src:"examples/humming_bird_flying/cogvideox15.mp4",
         score: "good",
-        comment: "Solid performance with good character consistency throughout the sequence."
+        comment: "Solid performance with good character consistency throughout the sequence.",
+        metrics: {
+          instructionFollowing: 7.6,
+          consistency: 7.9,
+          realism: 7.8,
+          animation: 7.5,
+          creativity: 7.7
+        }
       },
       {
         model:"FramePack + HunYuan",
         src:"examples/humming_bird_flying/HYFramepack.mp4",
         score: "good",
-        comment: "Enhanced motion quality shows the benefit of frame conditioning."
+        comment: "Enhanced motion quality shows the benefit of frame conditioning.",
+        metrics: {
+          instructionFollowing: 7.8,
+          consistency: 8.3,
+          realism: 8.2,
+          animation: 8.0,
+          creativity: 8.5
+        }
       }
     ],
   },
@@ -648,7 +839,14 @@ const examples = [
           {src:"examples/onions/veo3_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Perfect hand-eye coordination and realistic knife handling. Great POV perspective."
+        comment: "Perfect hand-eye coordination and realistic knife handling. Great POV perspective.",
+        metrics: {
+          instructionFollowing: 9.0,
+          consistency: 8.9,
+          realism: 8.8,
+          animation: 8.7,
+          creativity: 8.9
+        }
       },
       {
         model:"Veo 2",
@@ -657,7 +855,14 @@ const examples = [
           {src:"examples/onions/veo2_2.mp4", label:"v2"}
         ],
         score: "good",
-        comment: "Good chopping motion but hand positioning could be more natural."
+        comment: "Good chopping motion but hand positioning could be more natural.",
+        metrics: {
+          instructionFollowing: 8.0,
+          consistency: 8.1,
+          realism: 8.4,
+          animation: 7.7,
+          creativity: 7.9
+        }
       },
       {
         model:"Sora",
@@ -666,37 +871,79 @@ const examples = [
           {src:"examples/onions/sora_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Excellent detail in food texture and cutting technique. Very convincing POV."
+        comment: "Excellent detail in food texture and cutting technique. Very convincing POV.",
+        metrics: {
+          instructionFollowing: 8.6,
+          consistency: 8.4,
+          realism: 8.9,
+          animation: 8.5,
+          creativity: 8.4
+        }
       },
       {
         model:"Wan 2.1",
         src:"examples/onions/wan21.webp",
         score: "poor",
-        comment: "No animation - completely static image output."
+        comment: "No animation - completely static image output.",
+        metrics: {
+          instructionFollowing: 7.0,
+          consistency: 7.8,
+          realism: 7.8,
+          animation: 5.8,
+          creativity: 7.5
+        }
       },
       {
         model:"Kling 1.6",
         src:"examples/onions/kling16.mp4",
         score: "average",
-        comment: "Decent attempt but knife motion appears somewhat unnatural."
+        comment: "Decent attempt but knife motion appears somewhat unnatural.",
+        metrics: {
+          instructionFollowing: 8.0,
+          consistency: 7.9,
+          realism: 8.0,
+          animation: 8.3,
+          creativity: 7.6
+        }
       },
       {
         model:"Kling 2.0",
         src:"examples/onions/kling20.mp4",
         score: "good",
-        comment: "Improved hand coordination and more realistic cutting rhythm."
+        comment: "Improved hand coordination and more realistic cutting rhythm.",
+        metrics: {
+          instructionFollowing: 8.4,
+          consistency: 8.3,
+          realism: 8.4,
+          animation: 8.7,
+          creativity: 8.1
+        }
       },
       {
         model:"CogVideoX 1.5",
         src:"examples/onions/cogvideox15.mp4",
         score: "good",
-        comment: "Improved hand coordination and more realistic cutting rhythm."
+        comment: "Improved hand coordination and more realistic cutting rhythm.",
+        metrics: {
+          instructionFollowing: 7.9,
+          consistency: 8.1,
+          realism: 7.7,
+          animation: 7.8,
+          creativity: 7.6
+        }
       },
       {
         model:"FramePack + HunYuan",
         src:"examples/onions/HYFramepack.mp4",
         score: "good",
-        comment: "Enhanced version shows better temporal consistency in cutting motion."
+        comment: "Enhanced version shows better temporal consistency in cutting motion.",
+        metrics: {
+          instructionFollowing: 8.1,
+          consistency: 8.6,
+          realism: 8.2,
+          animation: 8.1,
+          creativity: 8.4
+        }
       }
     ],
   },
@@ -716,7 +963,14 @@ const examples = [
           {src:"examples/anime/veo3_2.mp4", label:"v2"}
         ],
         score: "good",
-        comment: "Good anime style adaptation but arrow trajectory could be clearer."
+        comment: "Good anime style adaptation but arrow trajectory could be clearer.",
+        metrics: {
+          instructionFollowing: 9.2,
+          consistency: 8.8,
+          realism: 8.5,
+          animation: 8.4,
+          creativity: 9.0
+        }
       },
       {
         model:"Veo 2",
@@ -725,7 +979,14 @@ const examples = [
           {src:"examples/anime/veo2_2.mp4", label:"v2"}
         ],
         score: "average",
-        comment: "Struggles with anime style consistency. Motion is somewhat choppy."
+        comment: "Struggles with anime style consistency. Motion is somewhat choppy.",
+        metrics: {
+          instructionFollowing: 8.2,
+          consistency: 7.7,
+          realism: 8.1,
+          animation: 8.2,
+          creativity: 7.8
+        }
       },
       {
         model:"Sora",
@@ -734,37 +995,79 @@ const examples = [
           {src:"examples/anime/sora_2.mp4", label:"v2"}
         ],
         score: "excellent",
-        comment: "Outstanding anime style rendering with fluid character animation."
+        comment: "Outstanding anime style rendering with fluid character animation.",
+        metrics: {
+          instructionFollowing: 8.4,
+          consistency: 8.2,
+          realism: 8.9,
+          animation: 8.3,
+          creativity: 8.7
+        }
       },
       {
         model:"Kling 1.6",
         src:"examples/anime/kling16.mp4",
         score: "good",
-        comment: "Nice anime aesthetics with good character movement dynamics."
+        comment: "Nice anime aesthetics with good character movement dynamics.",
+        metrics: {
+          instructionFollowing: 7.8,
+          consistency: 8.1,
+          realism: 8.2,
+          animation: 8.1,
+          creativity: 8.0
+        }
       },
       {
         model:"Kling 2.0",
         src:"examples/anime/kling20.mp4",
         score: "excellent",
-        comment: "Exceptional anime style with perfect arrow physics and dodge timing."
+        comment: "Exceptional anime style with perfect arrow physics and dodge timing.",
+        metrics: {
+          instructionFollowing: 8.2,
+          consistency: 8.5,
+          realism: 8.6,
+          animation: 8.8,
+          creativity: 8.3
+        }
       },
       {
         model:"Wan 2.1",
         src:"examples/anime/wan21.webp",
         score: "poor",
-        comment: "Static output - misses the entire point of the dynamic scene."
+        comment: "Static output - misses the entire point of the dynamic scene.",
+        metrics: {
+          instructionFollowing: 7.6,
+          consistency: 7.8,
+          realism: 7.2,
+          animation: 6.2,
+          creativity: 8.0
+        }
       },
       {
         model:"CogVideoX 1.5",
         src:"examples/anime/cogvideox15.mp4",
         score: "good",
-        comment: "Improved hand coordination and more realistic cutting rhythm."
+        comment: "Improved hand coordination and more realistic cutting rhythm.",
+        metrics: {
+          instructionFollowing: 7.7,
+          consistency: 7.9,
+          realism: 8.0,
+          animation: 7.4,
+          creativity: 7.8
+        }
       },
       {
         model:"FramePack + HunYuan",
         src:"examples/anime/HYFramepack.mp4",
         score: "good",
-        comment: "Solid anime interpretation with good character consistency."
+        comment: "Solid anime interpretation with good character consistency.",
+        metrics: {
+          instructionFollowing: 7.9,
+          consistency: 8.4,
+          realism: 8.1,
+          animation: 7.7,
+          creativity: 8.2
+        }
       }
     ],
   },
@@ -860,16 +1163,94 @@ class MediaShowdown{
   }
 
   buildScoringTable() {
-    const tbody = document.getElementById('scoringTableBody');
+    this.currentSort = { column: 'average', direction: 'desc' };
+    this.sortedModels = Object.entries(modelScores);
+    
+    // Add click handlers to headers
+    this.addSortingHandlers();
+    
+    // Initial render
+    this.renderSortedTable();
+  }
 
-    // Sort models by average score (descending)
-    const sortedModels = Object.entries(modelScores).sort((a, b) => {
-      const avgA = Object.values(a[1]).reduce((sum, score) => sum + score, 0) / Object.values(a[1]).length;
-      const avgB = Object.values(b[1]).reduce((sum, score) => sum + score, 0) / Object.values(b[1]).length;
-      return avgB - avgA;
+  addSortingHandlers() {
+    const headers = document.querySelectorAll('#scoringTable th');
+    const sortableColumns = [
+      { index: 0, key: 'model', type: 'string' },
+      { index: 1, key: 'instructionFollowing', type: 'number' },
+      { index: 2, key: 'consistency', type: 'number' },
+      { index: 3, key: 'realism', type: 'number' },
+      { index: 4, key: 'animation', type: 'number' },
+      { index: 5, key: 'creativity', type: 'number' },
+      { index: 6, key: 'average', type: 'number' }
+    ];
+
+    sortableColumns.forEach(({ index, key, type }) => {
+      const header = headers[index];
+      header.classList.add('sortable');
+      header.style.cursor = 'pointer';
+      
+      // Add sort indicator
+      const indicator = document.createElement('span');
+      indicator.className = 'sort-indicator';
+      indicator.innerHTML = '▼';
+      header.appendChild(indicator);
+      
+      // Set initial sort state for average column
+      if (key === 'average') {
+        header.classList.add('sort-desc');
+      }
+      
+      header.addEventListener('click', () => {
+        this.sortTable(key, type, header);
+      });
     });
+  }
 
-    sortedModels.forEach(([modelName, scores]) => {
+  sortTable(column, type, headerElement) {
+    // Update sort direction
+    const currentDirection = this.currentSort.column === column ? this.currentSort.direction : 'desc';
+    const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+    
+    this.currentSort = { column, direction: newDirection };
+    
+    // Update header indicators
+    document.querySelectorAll('#scoringTable th').forEach(h => {
+      h.classList.remove('sort-asc', 'sort-desc');
+    });
+    headerElement.classList.add(`sort-${newDirection}`);
+    
+    // Sort the data
+    this.sortedModels.sort((a, b) => {
+      let valueA, valueB;
+      
+      if (column === 'model') {
+        valueA = a[0];
+        valueB = b[0];
+      } else if (column === 'average') {
+        valueA = Object.values(a[1]).reduce((sum, score) => sum + score, 0) / Object.values(a[1]).length;
+        valueB = Object.values(b[1]).reduce((sum, score) => sum + score, 0) / Object.values(b[1]).length;
+      } else {
+        valueA = a[1][column];
+        valueB = b[1][column];
+      }
+      
+      if (type === 'string') {
+        const comparison = valueA.localeCompare(valueB);
+        return newDirection === 'asc' ? comparison : -comparison;
+      } else {
+        return newDirection === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+    });
+    
+    this.renderSortedTable();
+  }
+
+  renderSortedTable() {
+    const tbody = document.getElementById('scoringTableBody');
+    tbody.innerHTML = '';
+
+    this.sortedModels.forEach(([modelName, scores]) => {
       const average = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.values(scores).length;
 
       const row = document.createElement('tr');
@@ -983,6 +1364,54 @@ class MediaShowdown{
     carousel.currentIndex = newIndex;
   }
 
+  /* ── Metrics Toggle Functions ── */
+  createMetricsSection(modelName) {
+    const scores = modelScores[modelName];
+    if (!scores) return '';
+
+    const metricLabels = {
+      instructionFollowing: 'Instruction Following',
+      consistency: 'Consistency',
+      realism: 'Realism',
+      animation: 'Animation Quality',
+      creativity: 'Creativity'
+    };
+
+    const metricsHtml = Object.entries(scores).map(([key, value]) => {
+      const scoreClass = this.getScoreClass(value);
+      return `
+        <div class="metric-item">
+          <span class="metric-name">${metricLabels[key]}</span>
+          <div class="metric-score">
+            <span class="metric-value score-${scoreClass}">${this.formatScore(value)}</span>
+            <div class="metric-bar">
+              <div class="metric-bar-fill score-fill ${scoreClass}" style="width: ${value * 10}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="metrics-toggle" onclick="this.parentElement.toggleMetrics(this)">
+        <div class="metrics-toggle-text">
+          <div class="bar-chart-icon">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <span>Detailed Metrics</span>
+        </div>
+        <div class="toggle-arrow">▼</div>
+      </div>
+      <div class="metrics-details">
+        ${metricsHtml}
+      </div>
+    `;
+  }
+
   /* ── Content build ── */
   buildContent(){
     const content=document.getElementById('content');
@@ -1037,6 +1466,27 @@ class MediaShowdown{
           
           scoring.appendChild(badge);
           scoring.appendChild(comment);
+
+          // Add metrics section if model has scores
+          if (modelScores[img.model]) {
+            const metricsHtml = this.createMetricsSection(img.model);
+            scoring.innerHTML += metricsHtml;
+
+            // Add toggle functionality
+            scoring.toggleMetrics = function(toggleElement) {
+              const detailsElement = toggleElement.nextElementSibling;
+              const isExpanded = toggleElement.classList.contains('expanded');
+              
+              if (isExpanded) {
+                toggleElement.classList.remove('expanded');
+                detailsElement.classList.remove('expanded');
+              } else {
+                toggleElement.classList.add('expanded');
+                detailsElement.classList.add('expanded');
+              }
+            };
+          }
+          
           fig.appendChild(scoring);
         } else {
           // Add invisible placeholder for reference images to maintain consistent height
@@ -1057,9 +1507,12 @@ class MediaShowdown{
         } else {
           // For single items, add both click and keyboard handlers
           console.log('Setting up single modal handlers for', img.model); // Debug log
-          fig.addEventListener('click',()=>{
-            console.log('Single item clicked:', img.model); // Debug log
-            this.openModal(img, ex.prompt);
+          fig.addEventListener('click',(e)=>{
+            // Don't open modal if clicking on metrics toggle
+            if (!e.target.closest('.metrics-toggle')) {
+              console.log('Single item clicked:', img.model); // Debug log
+              this.openModal(img, ex.prompt);
+            }
           });
           fig.addEventListener('keydown',e=>{
             if(e.key==='Enter'||e.key===' '){e.preventDefault();

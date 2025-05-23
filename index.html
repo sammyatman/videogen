@@ -159,13 +159,55 @@ figure.reference{
 figure{
   margin:0;background:var(--surface);border:1px solid var(--border);
   border-radius:16px;overflow:hidden;box-shadow:0 4px 20px var(--shadow);
-  display:flex;flex-direction:column;transition:.3s;cursor:pointer;position:relative
+  display:flex;flex-direction:column;transition:.3s;cursor:pointer;position:relative;
+  height:100%
 }
 figure:hover{transform:translateY(-4px);box-shadow:0 8px 40px var(--shadow);
              border-color:var(--accent)}
 
-.image-container{position:relative;aspect-ratio:1;overflow:hidden;
-                 background:var(--bg-light)}
+.image-container{
+  position:relative;aspect-ratio:1;overflow:hidden;
+  background:var(--bg-light);flex-shrink:0
+}
+
+/* ───── Carousel Styles ───── */
+.carousel-container{position:relative;width:100%;height:100%}
+.carousel-slides{
+  position:relative;width:100%;height:100%;overflow:hidden;
+  cursor:pointer
+}
+.carousel-slide{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  opacity:0;transition:opacity .3s ease;pointer-events:none;
+  display:flex;align-items:center;justify-content:center
+}
+.carousel-slide.active{opacity:1;pointer-events:auto}
+
+.carousel-nav{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;z-index:20;
+  pointer-events:auto
+}
+.carousel-dot{
+  width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);
+  cursor:pointer;transition:.2s;pointer-events:auto
+}
+.carousel-dot.active{background:var(--accent)}
+
+.carousel-arrows{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:100%;display:flex;justify-content:space-between;
+  pointer-events:none;z-index:20
+}
+.carousel-arrow{
+  width:32px;height:32px;background:rgba(0,0,0,.7);color:white;
+  border:none;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:.2s;pointer-events:auto;
+  margin:0 8px
+}
+.carousel-arrow:hover{background:rgba(0,0,0,.9);transform:scale(1.1)}
+.carousel-arrow:disabled{opacity:.3;cursor:not-allowed}
 
 figure img,figure video{
   display:block;width:100%;height:100%;object-fit:cover;transition:.3s
@@ -188,8 +230,31 @@ figure:hover img,figure:hover video{transform:scale(1.05)}
 
 figcaption{
   padding:1rem;font-size:.9rem;font-weight:600;text-align:center;
-  border-top:1px solid var(--border);background:var(--surface)
+  border-top:1px solid var(--border);background:var(--surface);
+  flex-shrink:0
 }
+
+/* ───── Card Scoring ───── */
+.card-scoring{
+  padding:0.75rem 1rem;background:var(--bg-light);
+  border-top:1px solid var(--border);font-size:.85rem;
+  flex-grow:1;display:flex;flex-direction:column;justify-content:flex-start
+}
+.card-scoring-placeholder{
+  padding:0.75rem 1rem;background:var(--bg-light);
+  border-top:1px solid var(--border);font-size:.85rem;
+  flex-grow:1;min-height:90px;opacity:0
+}
+.score-badge{
+  display:inline-block;padding:.25rem .5rem;border-radius:12px;
+  font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:.5rem
+}
+.score-excellent{background:rgba(16,185,129,.2);color:#10b981}
+.score-good{background:rgba(59,130,246,.2);color:#3b82f6}
+.score-average{background:rgba(245,158,11,.2);color:#f59e0b}
+.score-poor{background:rgba(239,68,68,.2);color:#ef4444}
+.score-comment{color:var(--fg-muted);line-height:1.4}
 
 /* ───────── Modal ───────── */
 .modal{
@@ -199,16 +264,50 @@ figcaption{
 .modal.active{display:flex;align-items:center;justify-content:center;
               animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal-content{max-width:90vw;max-height:90vh;position:relative;
-               animation:scaleIn .3s ease}
+.modal-content{
+  max-width:90vw;max-height:90vh;position:relative;
+  animation:scaleIn .3s ease;background:transparent;
+  display:flex;flex-direction:column;align-items:center
+}
 @keyframes scaleIn{from{transform:scale(.8)}to{transform:scale(1)}}
-.modal img,.modal video{max-width:100%;max-height:100%;object-fit:contain;
-                        border-radius:12px}
-.modal video{background:#000}
+
+.modal-media-container{
+  position:relative;width:80vw;max-width:90vw;max-height:80vh;
+  display:flex;align-items:center;justify-content:center
+}
+.modal-media-container .carousel-slides{
+  position:relative;width:100%;height:100%;min-height:400px;
+  display:flex;align-items:center;justify-content:center
+}
+
+.modal-carousel-nav{
+  position:absolute;bottom:-2rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px
+}
+.modal-carousel-dot{
+  width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.4);
+  cursor:pointer;transition:.2s
+}
+.modal-carousel-dot.active{background:var(--accent)}
+
+.modal-carousel-arrows{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:calc(100% + 80px);left:-40px;
+  display:flex;justify-content:space-between;pointer-events:none
+}
+.modal-carousel-arrow{
+  width:40px;height:40px;background:rgba(0,0,0,.8);color:white;
+  border:none;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:.2s;pointer-events:auto
+}
+.modal-carousel-arrow:hover{background:rgba(0,0,0,1);transform:scale(1.1)}
+.modal-carousel-arrow:disabled{opacity:.3;cursor:not-allowed}
+
 .modal-caption{
-  position:absolute;bottom:-3rem;left:50%;transform:translateX(-50%);
-  background:var(--surface);color:var(--fg);padding:.5rem 1rem;border-radius:8px;
-  font-size:.9rem;white-space:nowrap
+  position:absolute;bottom:-4rem;left:50%;transform:translateX(-50%);
+  background:var(--surface);color:var(--fg);padding:.75rem 1.5rem;border-radius:8px;
+  font-size:.9rem;white-space:nowrap;max-width:90vw;text-align:center
 }
 .close{
   position:absolute;top:-3rem;right:0;color:var(--fg);font-size:2rem;
@@ -231,6 +330,8 @@ figcaption{
   .scoring-section{padding:1rem}
   .scoring-table{font-size:.8rem}
   .scoring-table th,.scoring-table td{padding:.5rem}
+  .carousel-arrow{width:28px;height:28px;font-size:12px}
+  .modal-carousel-arrow{width:36px;height:36px;font-size:14px}
 }
 /* Accessibility */
 @media(prefers-reduced-motion:reduce){
@@ -276,7 +377,7 @@ nav a:focus,figure:focus,#searchInput:focus{
   <div class="scoring-section">
     <h3 class="scoring-title">Model Performance Scores</h3>
     <p class="scoring-subtitle">Comparative evaluation across key video generation metrics (scored 1-10)</p>
-    
+
     <div class="scoring-table">
       <table id="scoringTable">
         <thead>
@@ -312,8 +413,18 @@ nav a:focus,figure:focus,#searchInput:focus{
 <div id="mediaModal" class="modal" role="dialog" aria-hidden="true">
   <div class="modal-content">
     <span class="close" aria-label="Close modal">×</span>
-    <img id="modalImage" alt="" style="display:none"/>
-    <video id="modalVideo" controls playsinline style="display:none"></video>
+    <div class="modal-media-container">
+      <div id="modalCarouselSlides" class="carousel-slides">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="modal-carousel-arrows">
+        <button class="modal-carousel-arrow" id="modalPrevBtn">‹</button>
+        <button class="modal-carousel-arrow" id="modalNextBtn">›</button>
+      </div>
+      <div class="modal-carousel-nav" id="modalCarouselNav">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
     <div class="modal-caption" id="modalCaption"></div>
   </div>
 </div>
@@ -326,19 +437,12 @@ nav a:focus,figure:focus,#searchInput:focus{
 
 // Model scoring data (scores out of 10)
 const modelScores = {
-  "Veo 3 – v1": {
-    instructionFollowing: 9.2,
-    consistency: 8.8,
-    realism: 9.1,
-    animation: 8.9,
-    creativity: 8.7
-  },
-  "Veo 3 – v2": {
-    instructionFollowing: 9.0,
-    consistency: 8.9,
-    realism: 9.0,
-    animation: 8.8,
-    creativity: 8.8
+  "Veo 3": {
+    instructionFollowing: 9.1,
+    consistency: 8.85,
+    realism: 9.05,
+    animation: 8.85,
+    creativity: 8.75
   },
   "Veo 2": {
     instructionFollowing: 8.1,
@@ -346,6 +450,13 @@ const modelScores = {
     realism: 8.3,
     animation: 8.0,
     creativity: 7.8
+  },
+  "Sora": {
+    instructionFollowing: 8.5,
+    consistency: 8.3,
+    realism: 8.7,
+    animation: 8.4,
+    creativity: 8.6
   },
   "HunYuan": {
     instructionFollowing: 7.8,
@@ -388,71 +499,271 @@ const examples = [
   {
     prompt:"Realistic woman in mid 40s walking through a city street in New York",
     images:[
-      {model:"Reference Image",src:"examples/woman_40_walking_nyc/original.jpeg"},
-      {model:"Veo 3 – v1",src:"examples/woman_40_walking_nyc/veo3_1.mp4"},
-      {model:"Veo 3 – v2",src:"examples/woman_40_walking_nyc/veo3_2.mp4"},
-      {model:"Veo 2 - v1",src:"examples/woman_40_walking_nyc/veo2_1.mp4"},
-      {model:"Veo 2 - v2",src:"examples/woman_40_walking_nyc/veo2_2.mp4"},
-      {model:"Sora - v1",src:"examples/woman_40_walking_nyc/sora_1.mp4"},
-      {model:"Sora - v2",src:"examples/woman_40_walking_nyc/sora_2.mp4"},
-      {model:"HunYuan",src:"examples/woman_40_walking_nyc/hunyuan.mp4"},
-      {model:"Wan 2.1",src:"examples/woman_40_walking_nyc/wan21.webp"},
-      {model:"Kling 1.6",src:"examples/woman_40_walking_nyc/kling16.mp4"},
-      {model:"Kling 2.0",src:"examples/woman_40_walking_nyc/kling20.mp4"},
-      {model:"FramePack + HunYuan",src:"examples/woman_40_walking_nyc/HYFramepack.mp4"}
+      {
+        model:"Reference Image",
+        src:"examples/woman_40_walking_nyc/original.jpeg",
+        score: "reference",
+        comment: "Original reference image"
+      },
+      {
+        model:"Veo 3",
+        variants:[
+          {src:"examples/woman_40_walking_nyc/veo3_1.mp4", label:"v1"},
+          {src:"examples/woman_40_walking_nyc/veo3_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Outstanding realism and natural movement. Both versions capture the urban environment perfectly."
+      },
+      {
+        model:"Veo 2",
+        variants:[
+          {src:"examples/woman_40_walking_nyc/veo2_1.mp4", label:"v1"},
+          {src:"examples/woman_40_walking_nyc/veo2_2.mp4", label:"v2"}
+        ],
+        score: "good",
+        comment: "Good quality but slightly less natural than Veo 3. Some minor inconsistencies in background."
+      },
+      {
+        model:"Sora",
+        variants:[
+          {src:"examples/woman_40_walking_nyc/sora_1.mp4", label:"v1"},
+          {src:"examples/woman_40_walking_nyc/sora_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Exceptional cinematic quality with great attention to lighting and atmosphere."
+      },
+      {
+        model:"HunYuan",
+        src:"examples/woman_40_walking_nyc/hunyuan.mp4",
+        score: "average",
+        comment: "Decent result but lacks the polish of top-tier models. Some artifacting visible."
+      },
+      {
+        model:"Wan 2.1",
+        src:"examples/woman_40_walking_nyc/wan21.webp",
+        score: "poor",
+        comment: "Static output instead of video. Limited animation capabilities."
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/woman_40_walking_nyc/kling16.mp4",
+        score: "good",
+        comment: "Solid performance with good character consistency throughout the sequence."
+      },
+      {
+        model:"Kling 2.0",
+        src:"examples/woman_40_walking_nyc/kling20.mp4",
+        score: "good",
+        comment: "Improved over 1.6 with better background detail and smoother motion."
+      },
+      {
+        model:"FramePack + HunYuan",
+        src:"examples/woman_40_walking_nyc/HYFramepack.mp4",
+        score: "good",
+        comment: "Enhanced version shows significant improvement over base HunYuan model."
+      }
     ],
   },
   {
     prompt:"A nature scene with a blue hummingbird moving towards a flower then flying away",
     images:[
-      {model:"Reference Image",src:"examples/humming_bird_flying/original.jpeg"},
-      {model:"Veo 3 – v1",src:"examples/humming_bird_flying/veo3_1.mp4"},
-      {model:"Veo 3 – v2",src:"examples/humming_bird_flying/veo3_2.mp4"},
-      {model:"Veo 2 - v1",src:"examples/humming_bird_flying/veo2_1.mp4"},
-      {model:"Veo 2 - v2",src:"examples/humming_bird_flying/veo2_2.mp4"},
-      {model:"Sora - v1",src:"examples/humming_bird_flying/sora_1.mp4"},
-      {model:"Sora - v2",src:"examples/humming_bird_flying/sora_2.mp4"},
-      {model:"HunYuan",src:"examples/humming_bird_flying/hunyuan.mp4"},
-      {model:"Wan 2.1",src:"examples/humming_bird_flying/wan21.webp"},
-      {model:"Kling 1.6",src:"examples/humming_bird_flying/kling16.mp4"},
-      {model:"Kling 2.0",src:"examples/humming_bird_flying/kling20.mp4"},
-      {model:"FramePack + HunYuan",src:"examples/humming_bird_flying/HYFramepack.mp4"}
+      {
+        model:"Reference Image",
+        src:"examples/humming_bird_flying/original.jpeg",
+        score: "reference",
+        comment: "Original reference image"
+      },
+      {
+        model:"Veo 3",
+        variants:[
+          {src:"examples/humming_bird_flying/veo3_1.mp4", label:"v1"},
+          {src:"examples/humming_bird_flying/veo3_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Stunning detail in wing movement and natural flight patterns. Beautiful color accuracy."
+      },
+      {
+        model:"Veo 2",
+        variants:[
+          {src:"examples/humming_bird_flying/veo2_1.mp4", label:"v1"},
+          {src:"examples/humming_bird_flying/veo2_2.mp4", label:"v2"}
+        ],
+        score: "good",
+        comment: "Good attempt at capturing rapid wing movement, though less refined than Veo 3."
+      },
+      {
+        model:"Sora",
+        variants:[
+          {src:"examples/humming_bird_flying/sora_1.mp4", label:"v1"},
+          {src:"examples/humming_bird_flying/sora_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Exceptional biological accuracy and fluid motion. Great depth of field effects."
+      },
+      {
+        model:"HunYuan",
+        src:"examples/humming_bird_flying/hunyuan.mp4",
+        score: "average",
+        comment: "Captures basic concept but wing detail could be better. Motion feels slightly stiff."
+      },
+      {
+        model:"Wan 2.1",
+        src:"examples/humming_bird_flying/wan21.webp",
+        score: "poor",
+        comment: "Static result fails to show any movement. Not suitable for motion scenes."
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/humming_bird_flying/kling16.mp4",
+        score: "average",
+        comment: "Decent bird animation but struggles with rapid wing movement physics."
+      },
+      {
+        model:"Kling 2.0",
+        src:"examples/humming_bird_flying/kling20.mp4",
+        score: "good",
+        comment: "Notable improvement in wing detail and overall scene composition."
+      },
+      {
+        model:"FramePack + HunYuan",
+        src:"examples/humming_bird_flying/HYFramepack.mp4",
+        score: "good",
+        comment: "Enhanced motion quality shows the benefit of frame conditioning."
+      }
     ],
   },
   {
     prompt:"A first person view of a home chef chopping onions",
     images:[
-      {model:"Reference Image",src:"examples/onions/original.jpeg"},
-      {model:"Veo 3 – v1",src:"examples/onions/veo3_1.mp4"},
-      {model:"Veo 3 – v2",src:"examples/onions/veo3_2.mp4"},
-      {model:"Veo 2 - v1",src:"examples/onions/veo2_1.mp4"},
-      {model:"Veo 2 - v2",src:"examples/onions/veo2_2.mp4"},
-      {model:"Sora - v1",src:"examples/onions/sora_1.mp4"},
-      {model:"Sora - v2",src:"examples/onions/sora_2.mp4"},
-      {model:"HunYuan",src:"examples/onions/hunyuan.mp4"},
-      {model:"Wan 2.1",src:"examples/onions/wan21.webp"},
-      {model:"Kling 1.6",src:"examples/onions/kling16.mp4"},
-      {model:"Kling 2.0",src:"examples/onions/kling20.mp4"},
-      {model:"FramePack + HunYuan",src:"examples/onions/HYFramepack.mp4"}
+      {
+        model:"Reference Image",
+        src:"examples/onions/original.jpeg",
+        score: "reference",
+        comment: "Original reference image"
+      },
+      {
+        model:"Veo 3",
+        variants:[
+          {src:"examples/onions/veo3_1.mp4", label:"v1"},
+          {src:"examples/onions/veo3_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Perfect hand-eye coordination and realistic knife handling. Great POV perspective."
+      },
+      {
+        model:"Veo 2",
+        variants:[
+          {src:"examples/onions/veo2_1.mp4", label:"v1"},
+          {src:"examples/onions/veo2_2.mp4", label:"v2"}
+        ],
+        score: "good",
+        comment: "Good chopping motion but hand positioning could be more natural."
+      },
+      {
+        model:"Sora",
+        variants:[
+          {src:"examples/onions/sora_1.mp4", label:"v1"},
+          {src:"examples/onions/sora_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Excellent detail in food texture and cutting technique. Very convincing POV."
+      },
+      {
+        model:"HunYuan",
+        src:"examples/onions/hunyuan.mp4",
+        score: "average",
+        comment: "Basic chopping motion captured but lacks fine detail in hand movements."
+      },
+      {
+        model:"Wan 2.1",
+        src:"examples/onions/wan21.webp",
+        score: "poor",
+        comment: "No animation - completely static image output."
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/onions/kling16.mp4",
+        score: "average",
+        comment: "Decent attempt but knife motion appears somewhat unnatural."
+      },
+      {
+        model:"Kling 2.0",
+        src:"examples/onions/kling20.mp4",
+        score: "good",
+        comment: "Improved hand coordination and more realistic cutting rhythm."
+      },
+      {
+        model:"FramePack + HunYuan",
+        src:"examples/onions/HYFramepack.mp4",
+        score: "good",
+        comment: "Enhanced version shows better temporal consistency in cutting motion."
+      }
     ],
   },
   {
     prompt:"Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
     images:[
-      {model:"Reference Image",src:"examples/anime/original.jpeg"},
-      {model:"Veo 3 – v1",src:"examples/anime/veo3_1.mp4"},
-      {model:"Veo 3 – v2",src:"examples/anime/veo3_2.mp4"},
-      {model:"Veo 2 - v1",src:"examples/anime/veo2_1.mp4"},
-      {model:"Veo 2 - v2",src:"examples/anime/veo2_2.mp4"},
-      {model:"Sora - v1",src:"examples/anime/sora_1.mp4"},
-      {model:"Sora - v2",src:"examples/anime/sora_2.mp4"},
-      {model:"Kling 1.6",src:"examples/anime/kling16.mp4"},
-      {model:"Kling 2.0",src:"examples/anime/kling20.mp4"},
-      {model:"Wan 2.1",src:"examples/anime/wan21.webp"},
-      {model:"FramePack + HunYuan",src:"examples/anime/HYFramepack.mp4"}
+      {
+        model:"Reference Image",
+        src:"examples/anime/original.jpeg",
+        score: "reference",
+        comment: "Original reference image"
+      },
+      {
+        model:"Veo 3",
+        variants:[
+          {src:"examples/anime/veo3_1.mp4", label:"v1"},
+          {src:"examples/anime/veo3_2.mp4", label:"v2"}
+        ],
+        score: "good",
+        comment: "Good anime style adaptation but arrow trajectory could be clearer."
+      },
+      {
+        model:"Veo 2",
+        variants:[
+          {src:"examples/anime/veo2_1.mp4", label:"v1"},
+          {src:"examples/anime/veo2_2.mp4", label:"v2"}
+        ],
+        score: "average",
+        comment: "Struggles with anime style consistency. Motion is somewhat choppy."
+      },
+      {
+        model:"Sora",
+        variants:[
+          {src:"examples/anime/sora_1.mp4", label:"v1"},
+          {src:"examples/anime/sora_2.mp4", label:"v2"}
+        ],
+        score: "excellent",
+        comment: "Outstanding anime style rendering with fluid character animation."
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/anime/kling16.mp4",
+        score: "good",
+        comment: "Nice anime aesthetics with good character movement dynamics."
+      },
+      {
+        model:"Kling 2.0",
+        src:"examples/anime/kling20.mp4",
+        score: "excellent",
+        comment: "Exceptional anime style with perfect arrow physics and dodge timing."
+      },
+      {
+        model:"Wan 2.1",
+        src:"examples/anime/wan21.webp",
+        score: "poor",
+        comment: "Static output - misses the entire point of the dynamic scene."
+      },
+      {
+        model:"FramePack + HunYuan",
+        src:"examples/anime/HYFramepack.mp4",
+        score: "good",
+        comment: "Solid anime interpretation with good character consistency."
+      }
     ],
   },
 ];
+
 /*───────────────────────────────────────────
  2)  APPLICATION CODE
 ───────────────────────────────────────────*/
@@ -461,9 +772,8 @@ class MediaShowdown{
     this.examples=examples;
     this.filtered=[...examples];
     this.modal=document.getElementById('mediaModal');
-    this.modalImg=document.getElementById('modalImage');
-    this.modalVid=document.getElementById('modalVideo');
-    this.modalCap=document.getElementById('modalCaption');
+    this.carousels = new Map(); // Track carousel states
+    this.modalCarousel = null; // Current modal carousel data
     this.init();
   }
 
@@ -491,6 +801,12 @@ class MediaShowdown{
       if(e.key==='Escape') this.closeModal();
     });
 
+    /* modal carousel controls */
+    document.getElementById('modalPrevBtn')
+      .addEventListener('click', () => this.modalCarouselPrev());
+    document.getElementById('modalNextBtn')
+      .addEventListener('click', () => this.modalCarouselNext());
+
     /* global error handling for thumbnails */
     document.addEventListener('error',(e)=>{
       if(e.target.tagName==='IMG'||e.target.tagName==='VIDEO'){
@@ -505,9 +821,20 @@ class MediaShowdown{
   /* ── Statistics ── */
   updateStats(){
     const totalPrompts=this.examples.length;
-    const totalMedia=this.examples.reduce((s,ex)=>s+ex.images.length,0);
+    let totalMedia = 0;
     const models=new Set();
-    this.examples.forEach(ex=>ex.images.forEach(img=>models.add(img.model)));
+    
+    this.examples.forEach(ex=>{
+      ex.images.forEach(img=>{
+        if(img.variants) {
+          totalMedia += img.variants.length;
+          models.add(img.model);
+        } else {
+          totalMedia += 1;
+          models.add(img.model);
+        }
+      });
+    });
 
     document.getElementById('totalPrompts').textContent=totalPrompts;
     document.getElementById('totalMedia').textContent=totalMedia;
@@ -528,7 +855,7 @@ class MediaShowdown{
 
   buildScoringTable() {
     const tbody = document.getElementById('scoringTableBody');
-    
+
     // Sort models by average score (descending)
     const sortedModels = Object.entries(modelScores).sort((a, b) => {
       const avgA = Object.values(a[1]).reduce((sum, score) => sum + score, 0) / Object.values(a[1]).length;
@@ -538,7 +865,7 @@ class MediaShowdown{
 
     sortedModels.forEach(([modelName, scores]) => {
       const average = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.values(scores).length;
-      
+
       const row = document.createElement('tr');
       row.innerHTML = `
         <td class="model-name">${modelName}</td>
@@ -612,6 +939,44 @@ class MediaShowdown{
     });
   }
 
+  /* ── Carousel Management ── */
+  createCarousel(carouselId, variants, container) {
+    const carousel = {
+      id: carouselId,
+      variants: variants,
+      currentIndex: 0,
+      container: container
+    };
+
+    this.carousels.set(carouselId, carousel);
+    return carousel;
+  }
+
+  updateCarousel(carouselId, newIndex) {
+    const carousel = this.carousels.get(carouselId);
+    if (!carousel) return;
+
+    // Update slides
+    const slides = carousel.container.querySelectorAll('.carousel-slide');
+    slides.forEach((slide, index) => {
+      slide.classList.toggle('active', index === newIndex);
+    });
+
+    // Update dots
+    const dots = carousel.container.querySelectorAll('.carousel-dot');
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === newIndex);
+    });
+
+    // Update arrows
+    const prevBtn = carousel.container.querySelector('.carousel-arrow:first-child');
+    const nextBtn = carousel.container.querySelector('.carousel-arrow:last-child');
+    if (prevBtn) prevBtn.disabled = newIndex === 0;
+    if (nextBtn) nextBtn.disabled = newIndex === carousel.variants.length - 1;
+
+    carousel.currentIndex = newIndex;
+  }
+
   /* ── Content build ── */
   buildContent(){
     const content=document.getElementById('content');
@@ -635,44 +1000,201 @@ class MediaShowdown{
 
         const container=document.createElement('div');container.className='image-container';
 
-        /* placeholder */
-        const load=document.createElement('div');load.className='loading-placeholder';
-        load.innerHTML='<div class="loading-spinner"></div>Loading…';
-        container.appendChild(load);
-
-        /* decide media type */
-        const isVideo=/\.(mp4|webm|mov)$/i.test(img.src);
-        let mediaEl;
-
-        if(isVideo){
-          mediaEl=document.createElement('video');
-          mediaEl.src=img.src;mediaEl.muted=true;mediaEl.playsInline=true;
-          mediaEl.loop=true;mediaEl.autoplay=true;mediaEl.style.display='none';
-          mediaEl.addEventListener('loadeddata',()=>{load.remove();mediaEl.style.display='block';});
-        }else{
-          mediaEl=document.createElement('img');
-          mediaEl.src=img.src;mediaEl.alt=`${img.model} – ${ex.prompt}`;
-          mediaEl.style.display='none';
-          mediaEl.onload=()=>{load.remove();mediaEl.style.display='block';};
+        // Create the media content
+        if(img.variants && img.variants.length > 1) {
+          // Create carousel for multiple variants
+          console.log('Creating carousel for', img.model, 'with', img.variants.length, 'variants'); // Debug log
+          this.createCarouselStructure(container, img, ex.prompt);
+        } else {
+          // Single media item
+          console.log('Creating single media for', img.model); // Debug log
+          this.createSingleMedia(container, img.variants ? img.variants[0] : img, img.model, ex.prompt);
         }
 
-        container.appendChild(mediaEl);fig.appendChild(container);
+        fig.appendChild(container);
 
         const cap=document.createElement('figcaption');cap.textContent=img.model;
         fig.appendChild(cap);
 
+        // Add scoring section
+        if(img.score !== 'reference') {
+          const scoring = document.createElement('div');
+          scoring.className = 'card-scoring';
+          
+          const badge = document.createElement('div');
+          badge.className = `score-badge score-${img.score}`;
+          badge.textContent = img.score.toUpperCase();
+          
+          const comment = document.createElement('div');
+          comment.className = 'score-comment';
+          comment.textContent = img.comment;
+          
+          scoring.appendChild(badge);
+          scoring.appendChild(comment);
+          fig.appendChild(scoring);
+        } else {
+          // Add invisible placeholder for reference images to maintain consistent height
+          const placeholder = document.createElement('div');
+          placeholder.className = 'card-scoring-placeholder';
+          fig.appendChild(placeholder);
+        }
+
         /* open modal */
-        fig.addEventListener('click',()=>this.openModal(img.src,isVideo,`${img.model} – ${ex.prompt}`));
-        fig.addEventListener('keydown',e=>{
-          if(e.key==='Enter'||e.key===' '){e.preventDefault();
-            this.openModal(img.src,isVideo,`${img.model} – ${ex.prompt}`);}
-        });
+        if(img.variants && img.variants.length > 1) {
+          // For carousel items, modal opening is handled inside createCarouselStructure
+          console.log('Carousel modal handlers set up for', img.model); // Debug log
+          // Just add keyboard support here
+          fig.addEventListener('keydown',e=>{
+            if(e.key==='Enter'||e.key===' '){e.preventDefault();
+              this.openModal(img, ex.prompt);}
+          });
+        } else {
+          // For single items, add both click and keyboard handlers
+          console.log('Setting up single modal handlers for', img.model); // Debug log
+          fig.addEventListener('click',()=>{
+            console.log('Single item clicked:', img.model); // Debug log
+            this.openModal(img, ex.prompt);
+          });
+          fig.addEventListener('keydown',e=>{
+            if(e.key==='Enter'||e.key===' '){e.preventDefault();
+              this.openModal(img, ex.prompt);}
+          });
+        }
 
         grid.appendChild(fig);
       });
 
       sec.appendChild(grid);content.appendChild(sec);
     });
+  }
+
+  createCarouselStructure(container, img, prompt) {
+    const carouselId = `carousel-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const carouselContainer = document.createElement('div');
+    carouselContainer.className = 'carousel-container';
+
+    const slides = document.createElement('div');
+    slides.className = 'carousel-slides';
+
+    // Create slides
+    img.variants.forEach((variant, index) => {
+      const slide = document.createElement('div');
+      slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+      
+      this.createSingleMedia(slide, variant, `${img.model} (${variant.label})`, prompt);
+      slides.appendChild(slide);
+    });
+
+    // Create navigation dots
+    const nav = document.createElement('div');
+    nav.className = 'carousel-nav';
+    img.variants.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering modal
+        this.updateCarousel(carouselId, index);
+      });
+      nav.appendChild(dot);
+    });
+
+    // Create arrow navigation
+    const arrows = document.createElement('div');
+    arrows.className = 'carousel-arrows';
+    
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'carousel-arrow';
+    prevBtn.innerHTML = '‹';
+    prevBtn.disabled = true;
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering modal
+      const carousel = this.carousels.get(carouselId);
+      if (carousel && carousel.currentIndex > 0) {
+        this.updateCarousel(carouselId, carousel.currentIndex - 1);
+      }
+    });
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'carousel-arrow';
+    nextBtn.innerHTML = '›';
+    nextBtn.disabled = img.variants.length <= 1;
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering modal
+      const carousel = this.carousels.get(carouselId);
+      if (carousel && carousel.currentIndex < carousel.variants.length - 1) {
+        this.updateCarousel(carouselId, carousel.currentIndex + 1);
+      }
+    });
+
+    arrows.appendChild(prevBtn);
+    arrows.appendChild(nextBtn);
+
+    carouselContainer.appendChild(slides);
+    carouselContainer.appendChild(arrows);
+    carouselContainer.appendChild(nav);
+    
+    container.appendChild(carouselContainer);
+
+    // Initialize carousel state
+    this.createCarousel(carouselId, img.variants, carouselContainer);
+
+    // Add click handler to the media content area for modal opening
+    slides.addEventListener('click', (e) => {
+      console.log('Carousel slides clicked', e.target); // Debug log
+      // Only open modal if not clicking on navigation elements
+      if (!e.target.closest('.carousel-nav') && !e.target.closest('.carousel-arrows')) {
+        const carousel = this.carousels.get(carouselId);
+        if (carousel) {
+          console.log('Opening modal for carousel', img.model); // Debug log
+          // Get current active variant
+          const currentVariant = carousel.variants[carousel.currentIndex];
+          const modalData = {
+            model: img.model,
+            variants: img.variants,
+            score: img.score,
+            comment: img.comment
+          };
+          this.openModal(modalData, prompt);
+        }
+      }
+    });
+  }
+
+  createSingleMedia(container, mediaData, modelName, prompt) {
+    const load = document.createElement('div');
+    load.className = 'loading-placeholder';
+    load.innerHTML = '<div class="loading-spinner"></div>Loading…';
+    container.appendChild(load);
+
+    const src = mediaData.src || mediaData;
+    const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+    let mediaEl;
+
+    if(isVideo){
+      mediaEl = document.createElement('video');
+      mediaEl.src = src;
+      mediaEl.muted = true;
+      mediaEl.playsInline = true;
+      mediaEl.loop = true;
+      mediaEl.autoplay = true;
+      mediaEl.style.display = 'none';
+      mediaEl.addEventListener('loadeddata', () => {
+        load.remove();
+        mediaEl.style.display = 'block';
+      });
+    } else {
+      mediaEl = document.createElement('img');
+      mediaEl.src = src;
+      mediaEl.alt = `${modelName} – ${prompt}`;
+      mediaEl.style.display = 'none';
+      mediaEl.onload = () => {
+        load.remove();
+        mediaEl.style.display = 'block';
+      };
+    }
+
+    container.appendChild(mediaEl);
   }
 
   /* ── Error placeholder ── */
@@ -687,25 +1209,223 @@ class MediaShowdown{
   }
 
   /* ── Modal ── */
-  openModal(src,isVideo,caption){
-    /* reset */
-    this.modalImg.style.display=this.modalVid.style.display='none';
-    this.modalImg.removeAttribute('src');this.modalVid.removeAttribute('src');
+  openModal(imgData, prompt){
+    console.log('Opening modal with:', imgData, prompt); // Debug log
+    
+    const modalSlides = document.getElementById('modalCarouselSlides');
+    const modalNav = document.getElementById('modalCarouselNav');
+    const modalCaption = document.getElementById('modalCaption');
+    const modalArrows = document.querySelector('.modal-carousel-arrows');
 
-    if(isVideo){
-      this.modalVid.src=src;this.modalVid.style.display='block';
-      this.modalVid.play().catch(()=>{});
-    }else{
-      this.modalImg.src=src;this.modalImg.alt=caption;
-      this.modalImg.style.display='block';
+    // Clear previous content
+    modalSlides.innerHTML = '';
+    modalNav.innerHTML = '';
+
+    if(imgData.variants && imgData.variants.length > 1) {
+      // Multi-variant carousel
+      this.modalCarousel = {
+        variants: imgData.variants,
+        currentIndex: 0,
+        model: imgData.model,
+        prompt: prompt
+      };
+
+      // Show navigation
+      modalNav.style.display = 'flex';
+      modalArrows.style.display = 'flex';
+
+      // Create slides
+      imgData.variants.forEach((variant, index) => {
+        const slide = document.createElement('div');
+        slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+        slide.style.position = 'absolute';
+        slide.style.top = '0';
+        slide.style.left = '0';
+        slide.style.width = '100%';
+        slide.style.height = '100%';
+        slide.style.display = 'flex';
+        slide.style.alignItems = 'center';
+        slide.style.justifyContent = 'center';
+
+        const src = variant.src;
+        const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+        if(isVideo) {
+          const video = document.createElement('video');
+          video.src = src;
+          video.controls = true;
+          video.playsInline = true;
+          video.style.maxWidth = '100%';
+          video.style.maxHeight = '80vh';
+          video.style.borderRadius = '12px';
+          video.style.backgroundColor = '#000';
+          slide.appendChild(video);
+          
+          // Auto-play the first video
+          if(index === 0) {
+            video.play().catch(() => {});
+          }
+        } else {
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = `${imgData.model} (${variant.label}) – ${prompt}`;
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '80vh';
+          img.style.objectFit = 'contain';
+          img.style.borderRadius = '12px';
+          slide.appendChild(img);
+        }
+
+        modalSlides.appendChild(slide);
+      });
+
+      // Create navigation dots
+      imgData.variants.forEach((variant, index) => {
+        const dot = document.createElement('div');
+        dot.className = `modal-carousel-dot ${index === 0 ? 'active' : ''}`;
+        dot.addEventListener('click', () => this.updateModalCarousel(index));
+        modalNav.appendChild(dot);
+      });
+
+      // Update arrow states
+      document.getElementById('modalPrevBtn').disabled = true;
+      document.getElementById('modalNextBtn').disabled = imgData.variants.length <= 1;
+
+      // Set initial caption
+      modalCaption.textContent = `${imgData.model} (${imgData.variants[0].label}) – ${prompt}`;
+
+    } else {
+      // Single item
+      this.modalCarousel = null;
+      
+      // Hide navigation
+      modalNav.style.display = 'none';
+      modalArrows.style.display = 'none';
+      
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide active';
+      slide.style.position = 'relative';
+      slide.style.width = '100%';
+      slide.style.height = '100%';
+      slide.style.display = 'flex';
+      slide.style.alignItems = 'center';
+      slide.style.justifyContent = 'center';
+
+      const src = imgData.variants ? imgData.variants[0].src : imgData.src;
+      const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+      if(isVideo) {
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.playsInline = true;
+        video.style.maxWidth = '100%';
+        video.style.maxHeight = '80vh';
+        video.style.borderRadius = '12px';
+        video.style.backgroundColor = '#000';
+        slide.appendChild(video);
+        video.play().catch(() => {});
+      } else {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `${imgData.model} – ${prompt}`;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '80vh';
+        img.style.objectFit = 'contain';
+        img.style.borderRadius = '12px';
+        slide.appendChild(img);
+      }
+
+      modalSlides.appendChild(slide);
+      modalCaption.textContent = `${imgData.model} – ${prompt}`;
     }
-    this.modalCap.textContent=caption;
-    this.modal.classList.add('active');this.modal.setAttribute('aria-hidden','false');
-    this.modal.focus();
+
+    // Show modal
+    this.modal.classList.add('active');
+    this.modal.setAttribute('aria-hidden', 'false');
+    
+    // Focus management
+    setTimeout(() => {
+      const firstVideo = this.modal.querySelector('video');
+      if (firstVideo) {
+        firstVideo.focus();
+      } else {
+        this.modal.focus();
+      }
+    }, 100);
   }
+
+  updateModalCarousel(newIndex) {
+    if (!this.modalCarousel) return;
+
+    const slides = document.querySelectorAll('#modalCarouselSlides .carousel-slide');
+    const dots = document.querySelectorAll('.modal-carousel-dot');
+
+    // Pause all videos first
+    slides.forEach(slide => {
+      const video = slide.querySelector('video');
+      if(video) {
+        video.pause();
+      }
+    });
+
+    // Update active states
+    slides.forEach((slide, index) => {
+      slide.classList.toggle('active', index === newIndex);
+      if(index === newIndex) {
+        const video = slide.querySelector('video');
+        if(video) {
+          video.play().catch(() => {});
+        }
+      }
+    });
+
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === newIndex);
+    });
+
+    // Update arrows
+    document.getElementById('modalPrevBtn').disabled = newIndex === 0;
+    document.getElementById('modalNextBtn').disabled = newIndex === this.modalCarousel.variants.length - 1;
+
+    // Update caption
+    const modalCaption = document.getElementById('modalCaption');
+    const variant = this.modalCarousel.variants[newIndex];
+    modalCaption.textContent = `${this.modalCarousel.model} (${variant.label}) – ${this.modalCarousel.prompt}`;
+
+    this.modalCarousel.currentIndex = newIndex;
+  }
+
+  modalCarouselPrev() {
+    if (this.modalCarousel && this.modalCarousel.currentIndex > 0) {
+      this.updateModalCarousel(this.modalCarousel.currentIndex - 1);
+    }
+  }
+
+  modalCarouselNext() {
+    if (this.modalCarousel && this.modalCarousel.currentIndex < this.modalCarousel.variants.length - 1) {
+      this.updateModalCarousel(this.modalCarousel.currentIndex + 1);
+    }
+  }
+
   closeModal(){
-    this.modal.classList.remove('active');this.modal.setAttribute('aria-hidden','true');
-    this.modalVid.pause();
+    this.modal.classList.remove('active');
+    this.modal.setAttribute('aria-hidden','true');
+    
+    // Pause all videos
+    const videos = this.modal.querySelectorAll('video');
+    videos.forEach(video => {
+      video.pause();
+      video.currentTime = 0;
+    });
+    
+    // Show navigation elements (they might have been hidden)
+    const modalNav = document.getElementById('modalCarouselNav');
+    const modalArrows = document.querySelector('.modal-carousel-arrows');
+    if(modalNav) modalNav.style.display = 'flex';
+    if(modalArrows) modalArrows.style.display = 'flex';
+    
+    this.modalCarousel = null;
   }
 }
 

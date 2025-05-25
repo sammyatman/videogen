@@ -41,6 +41,29 @@ header h1{
   -webkit-text-fill-color:transparent;background-clip:text
 }
 
+/* ───── Tab Navigation ───── */
+.tab-container{margin-bottom:2rem}
+.tab-nav{
+  display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);
+  padding-bottom:0
+}
+.tab-button{
+  padding:.75rem 1.5rem;background:transparent;border:none;color:var(--fg-muted);
+  font-size:.9rem;font-weight:500;cursor:pointer;transition:.2s;
+  border-bottom:2px solid transparent;position:relative
+}
+.tab-button:hover{color:var(--fg);background:var(--bg-light)}
+.tab-button.active{
+  color:var(--accent);border-bottom-color:var(--accent);
+  background:var(--bg-light)
+}
+.tab-badge{
+  display:inline-block;background:var(--surface);color:var(--fg-muted);
+  font-size:.7rem;padding:.2rem .4rem;border-radius:8px;margin-left:.5rem;
+  font-weight:600
+}
+.tab-button.active .tab-badge{background:var(--accent);color:white}
+
 .search-container{margin-bottom:1rem;position:relative}
 #searchInput{
   width:100%;max-width:400px;padding:.75rem 1rem .75rem 2.5rem;
@@ -162,13 +185,13 @@ h2::after{
   background:var(--gradient);border-radius:1px
 }
 
-/* grid with reference first & centred */
+/* grid with reference first & centred for I2V, regular grid for T2V */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:1.5rem
 }
-figure.reference{
+.grid.i2v figure.reference{
   grid-column:1 / -1;          /* span the whole row */
   justify-self:center;         /* centre horizontally */
   max-width:380px;             /* optional: limit width */
@@ -387,6 +410,10 @@ figcaption{
 .no-results{text-align:center;color:var(--fg-muted);font-size:1.1rem;
             margin:4rem 0;display:none}.no-results.visible{display:block}
 
+/* ───── Tab Content ───── */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
 /* ───── Responsive ───── */
 @media(max-width:768px){
   header{padding:1rem}
@@ -404,6 +431,8 @@ figcaption{
   .modal-carousel-arrow{width:36px;height:36px;font-size:14px}
   .metrics-details{max-height:250px}
   .metric-bar{width:40px}
+  .tab-nav{flex-wrap:wrap}
+  .tab-button{padding:.5rem 1rem;font-size:.8rem}
 }
 /* Accessibility */
 @media(prefers-reduced-motion:reduce){
@@ -411,7 +440,7 @@ figcaption{
    animation-iteration-count:1!important;transition-duration:0.01ms!important}
   html{scroll-behavior:auto}
 }
-nav a:focus,figure:focus,#searchInput:focus{
+nav a:focus,figure:focus,#searchInput:focus,.tab-button:focus{
   outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -420,12 +449,26 @@ nav a:focus,figure:focus,#searchInput:focus{
   <div class="header-content">
     <h1>VideoGen Models @ SPC VideoAI</h1>
 
-    <div class="search-container">
-      <div class="search-icon">🔍</div>
-      <input id="searchInput" type="text" placeholder="Search prompts…" aria-label="Search prompts"/>
-    </div>
+    <!-- ───── Tab Navigation ───── -->
+    <div class="tab-container">
+      <div class="tab-nav">
+        <button class="tab-button active" data-tab="i2v">
+          Image-to-Video 
+          <span class="tab-badge" id="i2vCount">0</span>
+        </button>
+        <button class="tab-button" data-tab="t2v">
+          Text-to-Video 
+          <span class="tab-badge" id="t2vCount">0</span>
+        </button>
+      </div>
 
-    <nav id="nav" role="navigation" aria-label="Prompt navigation"></nav>
+      <div class="search-container">
+        <div class="search-icon">🔍</div>
+        <input id="searchInput" type="text" placeholder="Search prompts…" aria-label="Search prompts"/>
+      </div>
+
+      <nav id="nav" role="navigation" aria-label="Prompt navigation"></nav>
+    </div>
   </div>
 </header>
 
@@ -470,13 +513,26 @@ nav a:focus,figure:focus,#searchInput:focus{
     </div>
   </div>
 
-  <div id="content"></div>
+  <!-- ───── Tab Contents ───── -->
+  <div class="tab-content active" id="i2v-content">
+    <div id="i2v-examples"></div>
+    <div class="no-results" id="i2vNoResults">
+      <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+      <div>No I2V prompts match your search</div>
+      <div style="font-size:.9rem;margin-top:.5rem;color:var(--fg-muted)">
+        Try adjusting your search terms
+      </div>
+    </div>
+  </div>
 
-  <div class="no-results" id="noResults">
-    <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
-    <div>No prompts match your search</div>
-    <div style="font-size:.9rem;margin-top:.5rem;color:var(--fg-muted)">
-      Try adjusting your search terms
+  <div class="tab-content" id="t2v-content">
+    <div id="t2v-examples"></div>
+    <div class="no-results" id="t2vNoResults">
+      <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+      <div>No T2V prompts match your search</div>
+      <div style="font-size:.9rem;margin-top:.5rem;color:var(--fg-muted)">
+        Try adjusting your search terms
+      </div>
     </div>
   </div>
 </main>
@@ -574,7 +630,8 @@ const modelScores = {
   },
 };
 
-const examples = [
+// I2V Examples (Image-to-Video with reference images)
+const i2vExamples = [
   {
     prompt:"Realistic woman in mid 40s walking through a city street in New York",
     images:[
@@ -1073,16 +1130,130 @@ const examples = [
   },
 ];
 
+// T2V Examples (Text-to-Video without reference images)
+const t2vExamples = [
+  {
+    prompt:"Realistic woman in mid 40s walking through a city street in New York",
+    images:[
+      {
+        model:"Kling 2.0",
+        src:"examples/woman_40_walking_nyc/kling20_t2v.mp4",
+        score: "good",
+        comment: "",
+        metrics: {
+          instructionFollowing: 8.4,
+          consistency: 8.2,
+          realism: 8.0,
+          animation: 8.5,
+          creativity: 8.7
+        }
+      },
+      {
+        model:"Kling 1.6",
+        src: "examples/woman_40_walking_nyc/kling16_t2v.mp4",
+        score: "good",
+        comment: "",
+        metrics: {
+          instructionFollowing: 8.4,
+          consistency: 8.2,
+          realism: 8.0,
+          animation: 8.5,
+          creativity: 8.7
+        }
+      },
+ 
+      {
+        model:"CogVideoX 1.5",
+        src:"examples/dragon_castle/cogvideox15.mp4",
+        score: "average",
+        comment: "Decent attempt but dragon movement appears less natural than other models.",
+        metrics: {
+          instructionFollowing: 7.8,
+          consistency: 7.6,
+          realism: 7.5,
+          animation: 7.3,
+          creativity: 8.0
+        }
+      }
+    ],
+  },
+  {
+    prompt:"A nature scene with a blue hummingbird moving towards a flower then flying away",
+    images:[
+      {
+        model:"Kling 2.0",
+        src:"examples/humming_bird_flying/kling20_t2v.mp4",
+        score: "good",
+        comment: "",
+        metrics: {
+          instructionFollowing: 8.2,
+          consistency: 8.0,
+          realism: 8.4,
+          animation: 8.1,
+          creativity: 7.9
+        }
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/humming_bird_flying/kling16_t2v.mp4",
+        score: "average",
+        comment: "",
+        metrics: {
+          instructionFollowing: 7.6,
+          consistency: 7.4,
+          realism: 8.0,
+          animation: 7.8,
+          creativity: 7.7
+        }
+      }
+    ],
+  },
+  {
+    prompt:"A first person view of a home chef chopping onions",
+    images:[
+      {
+        model:"Kling 2.0",
+        src:"examples/onions/kling20_t2v.mp4",
+        score: "good",
+        comment: "",
+        metrics: {
+          instructionFollowing: 8.0,
+          consistency: 7.9,
+          realism: 7.8,
+          animation: 8.2,
+          creativity: 8.4
+        }
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/onions/kling16_t2v.mp4",
+        score: "average",
+        comment: "",
+        metrics: {
+          instructionFollowing: 7.5,
+          consistency: 7.7,
+          realism: 7.3,
+          animation: 7.4,
+          creativity: 7.8
+        }
+      }
+    ],
+  }
+];
+
 /*───────────────────────────────────────────
  2)  APPLICATION CODE
 ───────────────────────────────────────────*/
 class MediaShowdown{
   constructor(){
-    this.examples=examples;
-    this.filtered=[...examples];
-    this.modal=document.getElementById('mediaModal');
-    this.carousels = new Map(); // Track carousel states
-    this.modalCarousel = null; // Current modal carousel data
+    this.i2vExamples = i2vExamples;
+    this.t2vExamples = t2vExamples;
+    this.currentTab = 'i2v';
+    this.filteredI2V = [...i2vExamples];
+    this.filteredT2V = [...t2vExamples];
+    this.modal = document.getElementById('mediaModal');
+    this.carousels = new Map();
+    this.modalCarousel = null;
     this.init();
   }
 
@@ -1093,9 +1264,15 @@ class MediaShowdown{
     this.buildScoringTable();
     this.buildNav();
     this.buildContent();
+    this.updateTabCounts();
   }
 
   listeners(){
+    /* tab switching */
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+    });
+
     /* search */
     document.getElementById('searchInput')
       .addEventListener('input',(e)=>this.handleSearch(e.target.value));
@@ -1124,30 +1301,65 @@ class MediaShowdown{
     },true);
   }
 
+  /* ── Tab Management ── */
+  switchTab(tabName) {
+    this.currentTab = tabName;
+    
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.toggle('active', content.id === `${tabName}-content`);
+    });
+    
+    // Update navigation and content for current tab
+    this.updateNav();
+    this.toggleNoResults();
+  }
+
+  updateTabCounts() {
+    document.getElementById('i2vCount').textContent = this.i2vExamples.length;
+    document.getElementById('t2vCount').textContent = this.t2vExamples.length;
+  }
+
+  getCurrentExamples() {
+    return this.currentTab === 'i2v' ? this.filteredI2V : this.filteredT2V;
+  }
+
+  getAllCurrentExamples() {
+    return this.currentTab === 'i2v' ? this.i2vExamples : this.t2vExamples;
+  }
+
   slugify(txt){return txt.toLowerCase()
         .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
 
   /* ── Statistics ── */
   updateStats(){
-    const totalPrompts=this.examples.length;
-    let totalMedia = 0;
-    const models=new Set();
+    const totalI2V = this.i2vExamples.length;
+    const totalT2V = this.t2vExamples.length;
+    const totalPrompts = totalI2V + totalT2V;
     
-    this.examples.forEach(ex=>{
+    let totalMedia = 0;
+    const models = new Set();
+    
+    [...this.i2vExamples, ...this.t2vExamples].forEach(ex=>{
       ex.images.forEach(img=>{
         if(img.variants) {
           totalMedia += img.variants.length;
           models.add(img.model);
-        } else {
+        } else if (img.model !== "Reference Image") {
           totalMedia += 1;
           models.add(img.model);
         }
       });
     });
 
-    document.getElementById('totalPrompts').textContent=totalPrompts;
-    document.getElementById('totalMedia').textContent=totalMedia;
-    document.getElementById('totalModels').textContent=models.size;
+    document.getElementById('totalPrompts').textContent = totalPrompts;
+    document.getElementById('totalMedia').textContent = totalMedia;
+    document.getElementById('totalModels').textContent = models.size;
   }
 
   /* ── Scoring Table ── */
@@ -1287,43 +1499,74 @@ class MediaShowdown{
 
   /* ── Search ── */
   handleSearch(query){
-    const term=query.toLowerCase().trim();
-    this.filtered=term?this.examples.filter(ex=>
+    const term = query.toLowerCase().trim();
+    
+    this.filteredI2V = term ? this.i2vExamples.filter(ex =>
       ex.prompt.toLowerCase().includes(term) ||
       ex.images.some(m=>m.model.toLowerCase().includes(term))
-    ):[...this.examples];
+    ) : [...this.i2vExamples];
+    
+    this.filteredT2V = term ? this.t2vExamples.filter(ex =>
+      ex.prompt.toLowerCase().includes(term) ||
+      ex.images.some(m=>m.model.toLowerCase().includes(term))
+    ) : [...this.t2vExamples];
 
-    this.updateNav();this.updateContent();this.toggleNoResults();
+    this.updateNav();
+    this.updateContent();
+    this.toggleNoResults();
   }
 
   updateNav(){
     document.querySelectorAll('nav a').forEach(link=>{
-      const id=link.getAttribute('href').slice(1);
-      const visible=this.filtered.some(ex=>this.slugify(ex.prompt)===id);
+      const id = link.getAttribute('href').slice(1);
+      const visible = this.getCurrentExamples().some(ex=>this.slugify(ex.prompt)===id);
       link.classList.toggle('hidden',!visible);
     });
   }
+
   updateContent(){
-    document.querySelectorAll('section').forEach(sec=>{
-      const visible=this.filtered.some(ex=>this.slugify(ex.prompt)===sec.id);
+    const currentContainer = this.currentTab === 'i2v' ? 'i2v-examples' : 't2v-examples';
+    document.querySelectorAll(`#${currentContainer} section`).forEach(sec=>{
+      const visible = this.getCurrentExamples().some(ex=>this.slugify(ex.prompt)===sec.id);
       sec.classList.toggle('hidden',!visible);
     });
   }
+
   toggleNoResults(){
-    document.getElementById('noResults')
-      .classList.toggle('visible',this.filtered.length===0);
+    const noResultsId = this.currentTab === 'i2v' ? 'i2vNoResults' : 't2vNoResults';
+    document.getElementById(noResultsId)
+      .classList.toggle('visible', this.getCurrentExamples().length === 0);
   }
 
   /* ── Navigation build ── */
   buildNav(){
-    const nav=document.getElementById('nav');
-    this.examples.forEach(ex=>{
-      const a=document.createElement('a');
-      a.href='#'+this.slugify(ex.prompt);
-      a.textContent=ex.prompt.length>50?ex.prompt.slice(0,47)+'…':ex.prompt;
-      a.setAttribute('aria-label',`Jump to: ${ex.prompt}`);
+    const nav = document.getElementById('nav');
+    
+    // Clear existing nav
+    nav.innerHTML = '';
+    
+    // Add I2V examples
+    this.i2vExamples.forEach(ex=>{
+      const a = document.createElement('a');
+      a.href = '#' + this.slugify(ex.prompt);
+      a.textContent = ex.prompt.length > 50 ? ex.prompt.slice(0,47) + '…' : ex.prompt;
+      a.setAttribute('aria-label',`Jump to I2V: ${ex.prompt}`);
+      a.style.borderLeft = '3px solid #3b82f6'; // Blue for I2V
       nav.appendChild(a);
     });
+    
+    // Add T2V examples
+    this.t2vExamples.forEach(ex=>{
+      const a = document.createElement('a');
+      a.href = '#' + this.slugify(ex.prompt);
+      a.textContent = ex.prompt.length > 50 ? ex.prompt.slice(0,47) + '…' : ex.prompt;
+      a.setAttribute('aria-label',`Jump to T2V: ${ex.prompt}`);
+      a.style.borderLeft = '3px solid #10b981'; // Green for T2V
+      nav.appendChild(a);
+    });
+    
+    // Initial nav visibility update
+    this.updateNav();
   }
 
   /* ── Carousel Management ── */
@@ -1414,45 +1657,55 @@ class MediaShowdown{
 
   /* ── Content build ── */
   buildContent(){
-    const content=document.getElementById('content');
-    this.examples.forEach((ex,i)=>{
-      const sec=document.createElement('section');
-      sec.id=this.slugify(ex.prompt);
-      sec.style.animationDelay=`${i*0.1}s`;
+    this.buildI2VContent();
+    this.buildT2VContent();
+  }
 
-      const h=document.createElement('h2');h.textContent=ex.prompt;sec.appendChild(h);
-      const grid=document.createElement('div');grid.className='grid';
+  buildI2VContent() {
+    const container = document.getElementById('i2v-examples');
+    container.innerHTML = '';
+    
+    this.i2vExamples.forEach((ex, i) => {
+      const sec = document.createElement('section');
+      sec.id = this.slugify(ex.prompt);
+      sec.style.animationDelay = `${i * 0.1}s`;
 
-      ex.images.forEach((img,idx)=>{
-        const fig=document.createElement('figure');
+      const h = document.createElement('h2');
+      h.textContent = ex.prompt;
+      sec.appendChild(h);
+      
+      const grid = document.createElement('div');
+      grid.className = 'grid i2v'; // Add i2v class for reference image styling
+
+      ex.images.forEach((img, idx) => {
+        const fig = document.createElement('figure');
 
         /* detect reference image */
-        const isRef=/reference/i.test(img.model)||idx===0;
-        if(isRef) fig.classList.add('reference');
+        const isRef = /reference/i.test(img.model) || img.model === 'Reference Image';
+        if (isRef) fig.classList.add('reference');
 
-        fig.tabIndex=0;fig.role='button';
-        fig.setAttribute('aria-label',`View ${img.model} media for: ${ex.prompt}`);
+        fig.tabIndex = 0;
+        fig.role = 'button';
+        fig.setAttribute('aria-label', `View ${img.model} media for: ${ex.prompt}`);
 
-        const container=document.createElement('div');container.className='image-container';
+        const container = document.createElement('div');
+        container.className = 'image-container';
 
         // Create the media content
-        if(img.variants && img.variants.length > 1) {
-          // Create carousel for multiple variants
-          console.log('Creating carousel for', img.model, 'with', img.variants.length, 'variants'); // Debug log
+        if (img.variants && img.variants.length > 1) {
           this.createCarouselStructure(container, img, ex.prompt);
         } else {
-          // Single media item
-          console.log('Creating single media for', img.model); // Debug log
           this.createSingleMedia(container, img.variants ? img.variants[0] : img, img.model, ex.prompt);
         }
 
         fig.appendChild(container);
 
-        const cap=document.createElement('figcaption');cap.textContent=img.model;
+        const cap = document.createElement('figcaption');
+        cap.textContent = img.model;
         fig.appendChild(cap);
 
         // Add scoring section
-        if(img.score !== 'reference') {
+        if (img.score !== 'reference') {
           const scoring = document.createElement('div');
           scoring.className = 'card-scoring';
           
@@ -1489,41 +1742,145 @@ class MediaShowdown{
           
           fig.appendChild(scoring);
         } else {
-          // Add invisible placeholder for reference images to maintain consistent height
+          // Add invisible placeholder for reference images
           const placeholder = document.createElement('div');
           placeholder.className = 'card-scoring-placeholder';
           fig.appendChild(placeholder);
         }
 
-        /* open modal */
-        if(img.variants && img.variants.length > 1) {
-          // For carousel items, modal opening is handled inside createCarouselStructure
-          console.log('Carousel modal handlers set up for', img.model); // Debug log
-          // Just add keyboard support here
-          fig.addEventListener('keydown',e=>{
-            if(e.key==='Enter'||e.key===' '){e.preventDefault();
-              this.openModal(img, ex.prompt);}
-          });
-        } else {
-          // For single items, add both click and keyboard handlers
-          console.log('Setting up single modal handlers for', img.model); // Debug log
-          fig.addEventListener('click',(e)=>{
-            // Don't open modal if clicking on metrics toggle
-            if (!e.target.closest('.metrics-toggle')) {
-              console.log('Single item clicked:', img.model); // Debug log
+        /* Modal handlers */
+        if (img.variants && img.variants.length > 1) {
+          fig.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
               this.openModal(img, ex.prompt);
             }
           });
-          fig.addEventListener('keydown',e=>{
-            if(e.key==='Enter'||e.key===' '){e.preventDefault();
-              this.openModal(img, ex.prompt);}
+        } else {
+          fig.addEventListener('click', (e) => {
+            if (!e.target.closest('.metrics-toggle')) {
+              this.openModal(img, ex.prompt);
+            }
+          });
+          fig.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.openModal(img, ex.prompt);
+            }
           });
         }
 
         grid.appendChild(fig);
       });
 
-      sec.appendChild(grid);content.appendChild(sec);
+      sec.appendChild(grid);
+      container.appendChild(sec);
+    });
+  }
+
+  buildT2VContent() {
+    const container = document.getElementById('t2v-examples');
+    container.innerHTML = '';
+    
+    this.t2vExamples.forEach((ex, i) => {
+      const sec = document.createElement('section');
+      sec.id = this.slugify(ex.prompt);
+      sec.style.animationDelay = `${i * 0.1}s`;
+
+      const h = document.createElement('h2');
+      h.textContent = ex.prompt;
+      sec.appendChild(h);
+      
+      const grid = document.createElement('div');
+      grid.className = 'grid'; // Regular grid for T2V (no reference image)
+
+      ex.images.forEach((img, idx) => {
+        const fig = document.createElement('figure');
+
+        fig.tabIndex = 0;
+        fig.role = 'button';
+        fig.setAttribute('aria-label', `View ${img.model} media for: ${ex.prompt}`);
+
+        const container = document.createElement('div');
+        container.className = 'image-container';
+
+        // Create the media content
+        if (img.variants && img.variants.length > 1) {
+          this.createCarouselStructure(container, img, ex.prompt);
+        } else {
+          this.createSingleMedia(container, img.variants ? img.variants[0] : img, img.model, ex.prompt);
+        }
+
+        fig.appendChild(container);
+
+        const cap = document.createElement('figcaption');
+        cap.textContent = img.model;
+        fig.appendChild(cap);
+
+        // Add scoring section (all T2V examples have scores since no reference)
+        const scoring = document.createElement('div');
+        scoring.className = 'card-scoring';
+        
+        const badge = document.createElement('div');
+        badge.className = `score-badge score-${img.score}`;
+        badge.textContent = img.score.toUpperCase();
+        
+        const comment = document.createElement('div');
+        comment.className = 'score-comment';
+        comment.textContent = img.comment;
+        
+        scoring.appendChild(badge);
+        scoring.appendChild(comment);
+
+        // Add metrics section if model has scores
+        if (modelScores[img.model]) {
+          const metricsHtml = this.createMetricsSection(img.model);
+          scoring.innerHTML += metricsHtml;
+
+          // Add toggle functionality
+          scoring.toggleMetrics = function(toggleElement) {
+            const detailsElement = toggleElement.nextElementSibling;
+            const isExpanded = toggleElement.classList.contains('expanded');
+            
+            if (isExpanded) {
+              toggleElement.classList.remove('expanded');
+              detailsElement.classList.remove('expanded');
+            } else {
+              toggleElement.classList.add('expanded');
+              detailsElement.classList.add('expanded');
+            }
+          };
+        }
+        
+        fig.appendChild(scoring);
+
+        /* Modal handlers */
+        if (img.variants && img.variants.length > 1) {
+          fig.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.openModal(img, ex.prompt);
+            }
+          });
+        } else {
+          fig.addEventListener('click', (e) => {
+            if (!e.target.closest('.metrics-toggle')) {
+              this.openModal(img, ex.prompt);
+            }
+          });
+          fig.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.openModal(img, ex.prompt);
+            }
+          });
+        }
+
+        grid.appendChild(fig);
+      });
+
+      sec.appendChild(grid);
+      container.appendChild(sec);
     });
   }
 
@@ -1552,7 +1909,7 @@ class MediaShowdown{
       const dot = document.createElement('div');
       dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
       dot.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent triggering modal
+        e.stopPropagation();
         this.updateCarousel(carouselId, index);
       });
       nav.appendChild(dot);
@@ -1567,7 +1924,7 @@ class MediaShowdown{
     prevBtn.innerHTML = '‹';
     prevBtn.disabled = true;
     prevBtn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering modal
+      e.stopPropagation();
       const carousel = this.carousels.get(carouselId);
       if (carousel && carousel.currentIndex > 0) {
         this.updateCarousel(carouselId, carousel.currentIndex - 1);
@@ -1579,7 +1936,7 @@ class MediaShowdown{
     nextBtn.innerHTML = '›';
     nextBtn.disabled = img.variants.length <= 1;
     nextBtn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering modal
+      e.stopPropagation();
       const carousel = this.carousels.get(carouselId);
       if (carousel && carousel.currentIndex < carousel.variants.length - 1) {
         this.updateCarousel(carouselId, carousel.currentIndex + 1);
@@ -1600,14 +1957,9 @@ class MediaShowdown{
 
     // Add click handler to the media content area for modal opening
     slides.addEventListener('click', (e) => {
-      console.log('Carousel slides clicked', e.target); // Debug log
-      // Only open modal if not clicking on navigation elements
       if (!e.target.closest('.carousel-nav') && !e.target.closest('.carousel-arrows')) {
         const carousel = this.carousels.get(carouselId);
         if (carousel) {
-          console.log('Opening modal for carousel', img.model); // Debug log
-          // Get current active variant
-          const currentVariant = carousel.variants[carousel.currentIndex];
           const modalData = {
             model: img.model,
             variants: img.variants,
@@ -1630,7 +1982,7 @@ class MediaShowdown{
     const isVideo = /\.(mp4|webm|mov)$/i.test(src);
     let mediaEl;
 
-    if(isVideo){
+    if (isVideo) {
       mediaEl = document.createElement('video');
       mediaEl.src = src;
       mediaEl.muted = true;
@@ -1657,20 +2009,18 @@ class MediaShowdown{
   }
 
   /* ── Error placeholder ── */
-  handleError(el){
-    const cont=el.closest('.image-container');
-    const load=cont.querySelector('.loading-placeholder');
-    if(load){
-      load.textContent='❌ Failed to load';
+  handleError(el) {
+    const cont = el.closest('.image-container');
+    const load = cont.querySelector('.loading-placeholder');
+    if (load) {
+      load.textContent = '❌ Failed to load';
       load.classList.add('error-placeholder');
     }
-    el.style.display='none';
+    el.style.display = 'none';
   }
 
   /* ── Modal ── */
-  openModal(imgData, prompt){
-    console.log('Opening modal with:', imgData, prompt); // Debug log
-    
+  openModal(imgData, prompt) {
     const modalSlides = document.getElementById('modalCarouselSlides');
     const modalNav = document.getElementById('modalCarouselNav');
     const modalCaption = document.getElementById('modalCaption');
@@ -1680,7 +2030,7 @@ class MediaShowdown{
     modalSlides.innerHTML = '';
     modalNav.innerHTML = '';
 
-    if(imgData.variants && imgData.variants.length > 1) {
+    if (imgData.variants && imgData.variants.length > 1) {
       // Multi-variant carousel
       this.modalCarousel = {
         variants: imgData.variants,
@@ -1709,7 +2059,7 @@ class MediaShowdown{
         const src = variant.src;
         const isVideo = /\.(mp4|webm|mov)$/i.test(src);
 
-        if(isVideo) {
+        if (isVideo) {
           const video = document.createElement('video');
           video.src = src;
           video.controls = true;
@@ -1720,8 +2070,7 @@ class MediaShowdown{
           video.style.backgroundColor = '#000';
           slide.appendChild(video);
           
-          // Auto-play the first video
-          if(index === 0) {
+          if (index === 0) {
             video.play().catch(() => {});
           }
         } else {
@@ -1773,7 +2122,7 @@ class MediaShowdown{
       const src = imgData.variants ? imgData.variants[0].src : imgData.src;
       const isVideo = /\.(mp4|webm|mov)$/i.test(src);
 
-      if(isVideo) {
+      if (isVideo) {
         const video = document.createElement('video');
         video.src = src;
         video.controls = true;
@@ -1823,7 +2172,7 @@ class MediaShowdown{
     // Pause all videos first
     slides.forEach(slide => {
       const video = slide.querySelector('video');
-      if(video) {
+      if (video) {
         video.pause();
       }
     });
@@ -1831,9 +2180,9 @@ class MediaShowdown{
     // Update active states
     slides.forEach((slide, index) => {
       slide.classList.toggle('active', index === newIndex);
-      if(index === newIndex) {
+      if (index === newIndex) {
         const video = slide.querySelector('video');
-        if(video) {
+        if (video) {
           video.play().catch(() => {});
         }
       }
@@ -1867,9 +2216,9 @@ class MediaShowdown{
     }
   }
 
-  closeModal(){
+  closeModal() {
     this.modal.classList.remove('active');
-    this.modal.setAttribute('aria-hidden','true');
+    this.modal.setAttribute('aria-hidden', 'true');
     
     // Pause all videos
     const videos = this.modal.querySelectorAll('video');

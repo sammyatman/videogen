@@ -1166,7 +1166,7 @@ const t2vExamples = [
         model:"CogVideoX 1.5",
         src:"examples/dragon_castle/cogvideox15.mp4",
         score: "average",
-        comment: "Decent attempt but dragon movement appears less natural than other models.",
+        comment: "",
         metrics: {
           instructionFollowing: 7.8,
           consistency: 7.6,
@@ -1238,7 +1238,38 @@ const t2vExamples = [
         }
       }
     ],
-  }
+  },
+  {
+    prompt:"Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
+    images:[
+      {
+        model:"Kling 2.0",
+        src:"examples/anime/kling20_t2v.mp4",
+        score: "good",
+        comment: "",
+        metrics: {
+          instructionFollowing: 8.0,
+          consistency: 7.9,
+          realism: 7.8,
+          animation: 8.2,
+          creativity: 8.4
+        }
+      },
+      {
+        model:"Kling 1.6",
+        src:"examples/anime/kling16_t2v.mp4",
+        score: "average",
+        comment: "",
+        metrics: {
+          instructionFollowing: 7.5,
+          consistency: 7.7,
+          realism: 7.3,
+          animation: 7.4,
+          creativity: 7.8
+        }
+      }
+    ],
+  },
 ];
 
 /*───────────────────────────────────────────

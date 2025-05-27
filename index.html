@@ -13,7 +13,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VideoGen Models @ SPC VideoAI</title>
+<title>SPC VideoAI Forum: Video Generation</title>
 
 <!-- ----------- STYLES ----------- -->
 <style>
@@ -512,981 +512,979 @@ figcaption{
 // Model scoring data (scores out of 10)
 const modelScores = {
   "Veo 3": {
-    instructionFollowing: 9.1,
-    consistency: 8.85,
-    realism: 9.05,
-    animation: 8.85,
-    creativity: 8.75
+    instructionFollowing: 7.00,
+    consistency: 9.50,
+    realism: 7.00,
+    animation: 8.00,
+    creativity: 7.50
   },
   "Veo 2": {
-    instructionFollowing: 8.1,
-    consistency: 7.9,
-    realism: 8.3,
-    animation: 8.0,
-    creativity: 7.8
+    instructionFollowing: 7.00,
+    consistency: 9.50,
+    realism: 6.50,
+    animation: 8.00,
+    creativity: 8.00
   },
   "Sora": {
-    instructionFollowing: 8.5,
-    consistency: 8.3,
-    realism: 8.7,
-    animation: 8.4,
-    creativity: 8.6
+    instructionFollowing: 7.00,
+    consistency: 7.50,
+    realism: 4.26,
+    animation: 5.00,
+    creativity: 5.50
   },
   "Luma Ray 2": {
-    instructionFollowing: 7.8,
-    consistency: 8.2,
-    realism: 7.9,
-    animation: 7.7,
-    creativity: 8.1
+    instructionFollowing: 6.00,
+    consistency: 8.00,
+    realism: 5.00,
+    animation: 6.00,
+    creativity: 6.50
   },
   "Wan 2.1": {
-    instructionFollowing: 7.5,
-    consistency: 7.8,
-    realism: 7.6,
-    animation: 7.4,
-    creativity: 7.7
+    instructionFollowing: 5.76,
+    consistency: 6.50,
+    realism: 4.00,
+    animation: 5.00,
+    creativity: 4.50
   },
   "Kling 1.6": {
-    instructionFollowing: 7.9,
-    consistency: 8.0,
-    realism: 8.1,
-    animation: 8.2,
-    creativity: 7.8
+    instructionFollowing: 6.50,
+    consistency: 7.50,
+    realism: 6.00,
+    animation: 2.00,
+    creativity: 6.00
   },
   "Kling 2.0": {
-    instructionFollowing: 8.3,
-    consistency: 8.4,
-    realism: 8.5,
-    animation: 8.6,
-    creativity: 8.2
+    instructionFollowing: 5.76,
+    consistency: 8.50,
+    realism: 5.76,
+    animation: 6,
+    creativity: 6.50
   },
   "CogVideoX 1.5": {
-    instructionFollowing: 8.0,
-    consistency: 8.5,
-    realism: 8.1,
-    animation: 7.9,
-    creativity: 8.3
+    instructionFollowing: 6.50,
+    consistency: 4.50,
+    realism: 4.26,
+    animation: 4.00,
+    creativity: 4.26
   },
   "FramePack + HunYuan": {
-    instructionFollowing: 8.0,
-    consistency: 8.5,
-    realism: 8.1,
-    animation: 7.9,
-    creativity: 8.3
+    instructionFollowing: 5.50,
+    consistency: 7.76,
+    realism: 4.26,
+    animation: 4.00,
+    creativity: 3.50
   },
 };
 
 // I2V Examples (Image-to-Video with reference images)
 const i2vExamples = [
   {
-    prompt:"Realistic woman in mid 40s walking through a city street in New York",
-    images:[
+    prompt: "Realistic woman in mid 40s walking through a city street in New York",
+    images: [
       {
-        model:"Reference Image",
-        src:"examples/woman_40_walking_nyc/original.jpeg",
+        model: "Reference Image",
+        src: "examples/woman_40_walking_nyc/original.jpeg",
         score: "reference",
         comment: "Original reference image"
       },
       {
-        model:"Veo 3",
-        variants:[
-          {src:"examples/woman_40_walking_nyc/veo3_1.mp4", label:"v1"},
-          {src:"examples/woman_40_walking_nyc/veo3_2.mp4", label:"v2"}
+        model: "Veo 3",
+        variants: [
+          { src: "examples/woman_40_walking_nyc/veo3_1.mp4", label: "v1" },
+          { src: "examples/woman_40_walking_nyc/veo3_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "excellent",  // sum = 10+10+10+0+8 = 38
         comment: "Outstanding realism and natural movement. Both versions capture the urban environment perfectly.",
         metrics: {
-          instructionFollowing: 9.2,
-          consistency: 8.9,
-          realism: 9.3,
-          animation: 9.0,
-          creativity: 8.5
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Veo 2",
-        variants:[
-          {src:"examples/woman_40_walking_nyc/veo2_1.mp4", label:"v1"},
-          {src:"examples/woman_40_walking_nyc/veo2_2.mp4", label:"v2"}
+        model: "Veo 2",
+        variants: [
+          { src: "examples/woman_40_walking_nyc/veo2_1.mp4", label: "v1" },
+          { src: "examples/woman_40_walking_nyc/veo2_2.mp4", label: "v2" }
         ],
-        score: "good",
+        score: "good",  // sum = 10+10+8+0+6 = 34
         comment: "Good quality but slightly less natural than Veo 3. Some minor inconsistencies in background.",
         metrics: {
-          instructionFollowing: 8.0,
-          consistency: 7.5,
-          realism: 8.4,
-          animation: 7.8,
-          creativity: 7.6
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/woman_40_walking_nyc/sora_1.mp4", label:"v1"},
-          {src:"examples/woman_40_walking_nyc/sora_2.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/woman_40_walking_nyc/sora_1.mp4", label: "v1" },
+          { src: "examples/woman_40_walking_nyc/sora_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "good",  // sum = 8+10+6+0+8 = 32
         comment: "Exceptional cinematic quality with great attention to lighting and atmosphere.",
         metrics: {
-          instructionFollowing: 8.7,
-          consistency: 8.5,
-          realism: 9.1,
-          animation: 8.6,
-          creativity: 9.2
+          instructionFollowing: 8,
+          consistency: 10,
+          realism: 6,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Luma Ray 2",
-        variants:[
-          {src:"examples/woman_40_walking_nyc/lumalabsray2_1080p.mp4", label:"v1"},
-          {src:"examples/woman_40_walking_nyc/lumalabsray2.mp4", label:"v2"}
+        model: "Luma Ray 2",
+        variants: [
+          { src: "examples/woman_40_walking_nyc/lumalabsray2_1080p.mp4", label: "v1" },
+          { src: "examples/woman_40_walking_nyc/lumalabsray2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "good",  // sum = 6+10+8+0+8 = 32
         comment: "Exceptional cinematic quality with great attention to lighting and atmosphere.",
         metrics: {
-          instructionFollowing: 8.7,
-          consistency: 8.5,
-          realism: 9.1,
-          animation: 8.6,
-          creativity: 9.2
+          instructionFollowing: 6,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/woman_40_walking_nyc/wan21.webp",
-        score: "poor",
+        model: "Wan 2.1",
+        src: "examples/woman_40_walking_nyc/wan21.webp",
+        score: "good",  // sum = 10+10+8+0+6 = 34
         comment: "Static output instead of video. Limited animation capabilities.",
         metrics: {
-          instructionFollowing: 7.2,
-          consistency: 7.8,
-          realism: 7.8,
-          animation: 6.0,
-          creativity: 7.0
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/woman_40_walking_nyc/kling16.mp4",
-        score: "good",
+        model: "Kling 1.6",
+        src: "examples/woman_40_walking_nyc/kling16.mp4",
+        score: "good",  // sum = 10+8+6+0+8 = 32
         comment: "Solid performance with good character consistency throughout the sequence.",
         metrics: {
-          instructionFollowing: 8.1,
-          consistency: 8.3,
-          realism: 8.0,
-          animation: 8.5,
-          creativity: 7.7
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/woman_40_walking_nyc/kling20.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/woman_40_walking_nyc/kling20.mp4",
+        score: "average",  // sum = 4+8+6+0+8 = 26
         comment: "Improved over 1.6 with better background detail and smoother motion.",
         metrics: {
-          instructionFollowing: 8.5,
-          consistency: 8.6,
-          realism: 8.3,
-          animation: 8.8,
-          creativity: 8.0
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/woman_40_walking_nyc/cogvideox15.mp4",
-        score: "good",
+        model: "CogVideoX 1.5",
+        src: "examples/woman_40_walking_nyc/cogvideox15.mp4",
+        score: "average",  // sum = 10+4+4+0+8 = 26
         comment: "Solid performance with good character consistency throughout the sequence.",
         metrics: {
-          instructionFollowing: 7.8,
-          consistency: 8.0,
-          realism: 7.9,
-          animation: 7.6,
-          creativity: 7.5
+          instructionFollowing: 10,
+          consistency: 4,
+          realism: 4,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/woman_40_walking_nyc/HYFramepack.mp4",
-        score: "good",
+        model: "FramePack + HunYuan",
+        src: "examples/woman_40_walking_nyc/HYFramepack.mp4",
+        score: "good",  // sum = 8+10+8+0+4 = 30
         comment: "Enhanced version shows significant improvement over base HunYuan model.",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.7,
-          realism: 8.0,
-          animation: 7.8,
-          creativity: 8.1
+          instructionFollowing: 8,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 4
         }
       }
-    ],
+    ]
   },
   {
-    prompt:"A nature scene with a blue hummingbird moving towards a flower then flying away",
-    images:[
+    prompt: "A nature scene with a blue hummingbird moving towards a flower then flying away",
+    images: [
       {
-        model:"Reference Image",
-        src:"examples/humming_bird_flying/original.jpeg",
+        model: "Reference Image",
+        src: "examples/humming_bird_flying/original.jpeg",
         score: "reference",
         comment: "Original reference image"
       },
       {
-        model:"Veo 3",
-        variants:[
-          {src:"examples/humming_bird_flying/veo3_1.mp4", label:"v1"},
-          {src:"examples/humming_bird_flying/veo3_2.mp4", label:"v2"}
+        model: "Veo 3",
+        variants: [
+          { src: "examples/humming_bird_flying/veo3_1.mp4", label: "v1" },
+          { src: "examples/humming_bird_flying/veo3_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "excellent",  // sum = 10+10+8+0+8 = 36
         comment: "Stunning detail in wing movement and natural flight patterns. Beautiful color accuracy.",
         metrics: {
-          instructionFollowing: 9.0,
-          consistency: 8.8,
-          realism: 8.9,
-          animation: 9.2,
-          creativity: 8.8
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Veo 2",
-        variants:[
-          {src:"examples/humming_bird_flying/veo2_1.mp4", label:"v1"},
-          {src:"examples/humming_bird_flying/veo2_2.mp4", label:"v2"}
+        model: "Veo 2",
+        variants: [
+          { src: "examples/humming_bird_flying/veo2_1.mp4", label: "v1" },
+          { src: "examples/humming_bird_flying/veo2_2.mp4", label: "v2" }
         ],
-        score: "good",
+        score: "excellent",  // sum = 10+10+8+0+10 = 38
         comment: "Good attempt at capturing rapid wing movement, though less refined than Veo 3.",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.0,
-          realism: 8.1,
-          animation: 8.3,
-          creativity: 7.9
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 10
         }
       },
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/humming_bird_flying/sora_1.mp4", label:"v1"},
-          {src:"examples/humming_bird_flying/sora_2.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/humming_bird_flying/sora_1.mp4", label: "v1" },
+          { src: "examples/humming_bird_flying/sora_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",  // sum = 10+8+4+0+6 = 28
         comment: "Exceptional biological accuracy and fluid motion. Great depth of field effects.",
         metrics: {
-          instructionFollowing: 8.3,
-          consistency: 8.1,
-          realism: 8.5,
-          animation: 8.2,
-          creativity: 8.7
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 4,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Luma Ray 2",
-        variants:[
-          {src:"examples/humming_bird_flying/lumalabsray2_1080p.mp4", label:"v1"},
-          {src:"examples/humming_bird_flying/lumalabsray2.mp4", label:"v2"}
+        model: "Luma Ray 2",
+        variants: [
+          { src: "examples/humming_bird_flying/lumalabsray2_1080p.mp4", label: "v1" },
+          { src: "examples/humming_bird_flying/lumalabsray2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "good",  // sum = 10+8+6+0+6 = 30
         comment: "Exceptional cinematic quality with great attention to lighting and atmosphere.",
         metrics: {
-          instructionFollowing: 8.7,
-          consistency: 8.5,
-          realism: 9.1,
-          animation: 8.6,
-          creativity: 9.2
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/humming_bird_flying/wan21.webp",
-        score: "poor",
+        model: "Wan 2.1",
+        src: "examples/humming_bird_flying/wan21.webp",
+        score: "average",  // sum = 6+4+4+0+6 = 20
         comment: "Static result fails to show any movement. Not suitable for motion scenes.",
         metrics: {
-          instructionFollowing: 7.8,
-          consistency: 7.8,
-          realism: 7.4,
-          animation: 6.5,
-          creativity: 7.2
+          instructionFollowing: 6,
+          consistency: 4,
+          realism: 4,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/humming_bird_flying/kling16.mp4",
-        score: "average",
+        model: "Kling 1.6",
+        src: "examples/humming_bird_flying/kling16.mp4",
+        score: "good",  // sum = 10+10+6+0+4 = 30
         comment: "Decent bird animation but struggles with rapid wing movement physics.",
         metrics: {
-          instructionFollowing: 7.7,
-          consistency: 7.8,
-          realism: 8.2,
-          animation: 7.9,
-          creativity: 7.9
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 6,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/humming_bird_flying/kling20.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/humming_bird_flying/kling20.mp4",
+        score: "good",  // sum = 10+10+8+0+6 = 34
         comment: "Notable improvement in wing detail and overall scene composition.",
         metrics: {
-          instructionFollowing: 8.1,
-          consistency: 8.2,
-          realism: 8.7,
-          animation: 8.4,
-          creativity: 8.4
+          instructionFollowing: 10,
+          consistency: 10,
+          realism: 8,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/humming_bird_flying/cogvideox15.mp4",
-        score: "good",
+        model: "CogVideoX 1.5",
+        src: "examples/humming_bird_flying/cogvideox15.mp4",
+        score: "average",  // sum = 10+2+4+0+4 = 20
         comment: "Solid performance with good character consistency throughout the sequence.",
         metrics: {
-          instructionFollowing: 7.6,
-          consistency: 7.9,
-          realism: 7.8,
-          animation: 7.5,
-          creativity: 7.7
+          instructionFollowing: 10,
+          consistency: 2,
+          realism: 4,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/humming_bird_flying/HYFramepack.mp4",
-        score: "good",
+        model: "FramePack + HunYuan",
+        src: "examples/humming_bird_flying/HYFramepack.mp4",
+        score: "average",  // sum = 6+8+4+0+2 = 20
         comment: "Enhanced motion quality shows the benefit of frame conditioning.",
         metrics: {
-          instructionFollowing: 7.8,
-          consistency: 8.3,
-          realism: 8.2,
-          animation: 8.0,
-          creativity: 8.5
+          instructionFollowing: 6,
+          consistency: 8,
+          realism: 4,
+          animation: 0,
+          creativity: 2
         }
       }
-    ],
+    ]
   },
   {
-    prompt:"A first person view of a home chef chopping onions",
-    images:[
+    prompt: "A first person view of a home chef chopping onions",
+    images: [
       {
-        model:"Reference Image",
-        src:"examples/onions/original.jpeg",
+        model: "Reference Image",
+        src: "examples/onions/original.jpeg",
         score: "reference",
         comment: "Original reference image"
       },
       {
-        model:"Veo 3",
-        variants:[
-          {src:"examples/onions/veo3_1.mp4", label:"v1"},
-          {src:"examples/onions/veo3_2.mp4", label:"v2"}
+        model: "Veo 3",
+        variants: [
+          { src: "examples/onions/veo3_1.mp4", label: "v1" },
+          { src: "examples/onions/veo3_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "good",  // sum = 4+10+10+0+10 = 34
         comment: "Perfect hand-eye coordination and realistic knife handling. Great POV perspective.",
         metrics: {
-          instructionFollowing: 9.0,
-          consistency: 8.9,
-          realism: 8.8,
-          animation: 8.7,
-          creativity: 8.9
+          instructionFollowing: 4,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 10
         }
       },
       {
-        model:"Veo 2",
-        variants:[
-          {src:"examples/onions/veo2_1.mp4", label:"v1"},
-          {src:"examples/onions/veo2_2.mp4", label:"v2"}
+        model: "Veo 2",
+        variants: [
+          { src: "examples/onions/veo2_1.mp4", label: "v1" },
+          { src: "examples/onions/veo2_2.mp4", label: "v2" }
         ],
-        score: "good",
+        score: "good",  // sum = 4+10+10+0+10 = 34
         comment: "Good chopping motion but hand positioning could be more natural.",
         metrics: {
-          instructionFollowing: 8.0,
-          consistency: 8.1,
-          realism: 8.4,
-          animation: 7.7,
-          creativity: 7.9
+          instructionFollowing: 4,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 10
         }
       },
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/onions/sora_1.mp4", label:"v1"},
-          {src:"examples/onions/sora_2.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/onions/sora_1.mp4", label: "v1" },
+          { src: "examples/onions/sora_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",  // sum = 4+4+4+0+4 = 20
         comment: "Excellent detail in food texture and cutting technique. Very convincing POV.",
         metrics: {
-          instructionFollowing: 8.6,
-          consistency: 8.4,
-          realism: 8.9,
-          animation: 8.5,
-          creativity: 8.4
+          instructionFollowing: 6,
+          consistency: 6,
+          realism: 4,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Luma Ray 2",
-        variants:[
-          {src:"examples/onions/lumalabsray2_1080p.mp4", label:"v1"},
-          {src:"examples/onions/lumalabsray2.mp4", label:"v2"}
+        model: "Luma Ray 2",
+        variants: [
+          { src: "examples/onions/lumalabsray2_1080p.mp4", label: "v1" },
+          { src: "examples/onions/lumalabsray2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",  // sum = 4+10+6+0+8 = 28
         comment: "Exceptional cinematic quality with great attention to lighting and atmosphere.",
         metrics: {
-          instructionFollowing: 8.7,
-          consistency: 8.5,
-          realism: 9.1,
-          animation: 8.6,
-          creativity: 9.2
+          instructionFollowing: 4,
+          consistency: 10,
+          realism: 6,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/onions/wan21.webp",
-        score: "poor",
+        model: "Wan 2.1",
+        src: "examples/onions/wan21.webp",
+        score: "average",  // sum = 4+6+6+0+4 = 20
         comment: "No animation - completely static image output.",
         metrics: {
-          instructionFollowing: 7.0,
-          consistency: 7.8,
-          realism: 7.8,
-          animation: 5.8,
-          creativity: 7.5
+          instructionFollowing: 4,
+          consistency: 6,
+          realism: 6,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/onions/kling16.mp4",
-        score: "average",
+        model: "Kling 1.6",
+        src: "examples/onions/kling16.mp4",
+        score: "good",  // sum = 4+8+8+0+10 = 30
         comment: "Decent attempt but knife motion appears somewhat unnatural.",
         metrics: {
-          instructionFollowing: 8.0,
-          consistency: 7.9,
-          realism: 8.0,
-          animation: 8.3,
-          creativity: 7.6
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 8,
+          animation: 0,
+          creativity: 10
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/onions/kling20.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/onions/kling20.mp4",
+        score: "good",  // sum = 4+10+10+0+8 = 32
         comment: "Improved hand coordination and more realistic cutting rhythm.",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.3,
-          realism: 8.4,
-          animation: 8.7,
-          creativity: 8.1
+          instructionFollowing: 4,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/onions/cogvideox15.mp4",
-        score: "good",
+        model: "CogVideoX 1.5",
+        src: "examples/onions/cogvideox15.mp4",
+        score: "average",  // sum = 4+8+8+0+4 = 24
         comment: "Improved hand coordination and more realistic cutting rhythm.",
         metrics: {
-          instructionFollowing: 7.9,
-          consistency: 8.1,
-          realism: 7.7,
-          animation: 7.8,
-          creativity: 7.6
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 8,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/onions/HYFramepack.mp4",
-        score: "good",
+        model: "FramePack + HunYuan",
+        src: "examples/onions/HYFramepack.mp4",
+        score: "average",  // sum = 4+8+6+0+4 = 22
         comment: "Enhanced version shows better temporal consistency in cutting motion.",
         metrics: {
-          instructionFollowing: 8.1,
-          consistency: 8.6,
-          realism: 8.2,
-          animation: 8.1,
-          creativity: 8.4
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 4
         }
       }
-    ],
+    ]
   },
   {
-    prompt:"Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
-    images:[
+    prompt: "Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
+    images: [
       {
-        model:"Reference Image",
-        src:"examples/anime/original.jpeg",
+        model: "Reference Image",
+        src: "examples/anime/original.jpeg",
         score: "reference",
         comment: "Original reference image"
       },
       {
-        model:"Veo 3",
-        variants:[
-          {src:"examples/anime/veo3_1.mp4", label:"v1"},
-          {src:"examples/anime/veo3_2.mp4", label:"v2"}
+        model: "Veo 3",
+        variants: [
+          { src: "examples/anime/veo3_1.mp4", label: "v1" },
+          { src: "examples/anime/veo3_2.mp4", label: "v2" }
         ],
-        score: "good",
+        score: "average",  // sum = 4+8+0+8+4 = 24
         comment: "Good anime style adaptation but arrow trajectory could be clearer.",
         metrics: {
-          instructionFollowing: 9.2,
-          consistency: 8.8,
-          realism: 8.5,
-          animation: 8.4,
-          creativity: 9.0
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 0,
+          animation: 8,
+          creativity: 4
         }
       },
       {
-        model:"Veo 2",
-        variants:[
-          {src:"examples/anime/veo2_1.mp4", label:"v1"},
-          {src:"examples/anime/veo2_2.mp4", label:"v2"}
+        model: "Veo 2",
+        variants: [
+          { src: "examples/anime/veo2_1.mp4", label: "v1" },
+          { src: "examples/anime/veo2_2.mp4", label: "v2" }
         ],
-        score: "average",
+        score: "average",  // sum = 4+8+0+8+6 = 26
         comment: "Struggles with anime style consistency. Motion is somewhat choppy.",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 7.7,
-          realism: 8.1,
-          animation: 8.2,
-          creativity: 7.8
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 0,
+          animation: 8,
+          creativity: 6
         }
       },
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/anime/sora_1.mp4", label:"v1"},
-          {src:"examples/anime/sora_2.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/anime/sora_1.mp4", label: "v1" },
+          { src: "examples/anime/sora_2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",  // sum = 4+6+0+6+4 = 20
         comment: "Outstanding anime style rendering with fluid character animation.",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.9,
-          animation: 8.3,
-          creativity: 8.7
+          instructionFollowing: 4,
+          consistency: 6,
+          realism: 0,
+          animation: 6,
+          creativity: 4
         }
       },
       {
-        model:"Luma Ray 2",
-        variants:[
-          {src:"examples/anime/lumalabsray2_1080p.mp4", label:"v1"},
-          {src:"examples/anime/lumalabsray2.mp4", label:"v2"}
+        model: "Luma Ray 2",
+        variants: [
+          { src: "examples/anime/lumalabsray2_1080p.mp4", label: "v1" },
+          { src: "examples/anime/lumalabsray2.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",  // sum = 4+4+0+6+4 = 18
         comment: "Exceptional cinematic quality with great attention to lighting and atmosphere.",
         metrics: {
-          instructionFollowing: 8.7,
-          consistency: 8.5,
-          realism: 9.1,
-          animation: 8.6,
-          creativity: 9.2
+          instructionFollowing: 5,
+          consistency: 6,
+          realism: 0,
+          animation: 6,
+          creativity: 4
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/anime/kling16.mp4",
-        score: "good",
+        model: "Kling 1.6",
+        src: "examples/anime/kling16.mp4",
+        score: "poor",  // sum = 2+4+0+2+2 = 10
         comment: "Nice anime aesthetics with good character movement dynamics.",
         metrics: {
-          instructionFollowing: 7.8,
-          consistency: 8.1,
-          realism: 8.2,
-          animation: 8.1,
-          creativity: 8.0
+          instructionFollowing: 2,
+          consistency: 4,
+          realism: 0,
+          animation: 2,
+          creativity: 2
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/anime/kling20.mp4",
-        score: "excellent",
+        model: "Kling 2.0",
+        src: "examples/anime/kling20.mp4",
+        score: "average",  // sum = 6+6+0+6+6 = 24
         comment: "Exceptional anime style with perfect arrow physics and dodge timing.",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.5,
-          realism: 8.6,
-          animation: 8.8,
-          creativity: 8.3
+          instructionFollowing: 6,
+          consistency: 6,
+          realism: 0,
+          animation: 6,
+          creativity: 6
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/anime/wan21.webp",
-        score: "poor",
+        model: "Wan 2.1",
+        src: "examples/anime/wan21.webp",
+        score: "average",  // sum = 6+4+0+4+6 = 20
         comment: "Static output - misses the entire point of the dynamic scene.",
         metrics: {
-          instructionFollowing: 7.6,
-          consistency: 7.8,
-          realism: 7.2,
-          animation: 6.2,
-          creativity: 8.0
+          instructionFollowing: 6,
+          consistency: 4,
+          realism: 0,
+          animation: 4,
+          creativity: 6
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/anime/cogvideox15.mp4",
-        score: "good",
+        model: "CogVideoX 1.5",
+        src: "examples/anime/cogvideox15.mp4",
+        score: "poor",  // sum = 2+6+0+6+2 = 16
         comment: "Improved hand coordination and more realistic cutting rhythm.",
         metrics: {
-          instructionFollowing: 7.7,
-          consistency: 7.9,
-          realism: 8.0,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 4,
+          consistency: 6,
+          realism: 0,
+          animation: 4,
+          creativity: 2
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/anime/HYFramepack.mp4",
-        score: "good",
+        model: "FramePack + HunYuan",
+        src: "examples/anime/HYFramepack.mp4",
+        score: "poor",  // sum = 2+6+0+2+2 = 12
         comment: "Solid anime interpretation with good character consistency.",
         metrics: {
-          instructionFollowing: 7.9,
-          consistency: 8.4,
-          realism: 8.1,
-          animation: 7.7,
-          creativity: 8.2
+          instructionFollowing: 2,
+          consistency: 6,
+          realism: 0,
+          animation: 4,
+          creativity: 2
         }
       }
-    ],
-  },
+    ]
+  }
 ];
-
 // T2V Examples (Text-to-Video without reference images)
 const t2vExamples = [
   {
-    prompt:"Realistic woman in mid 40s walking through a city street in New York",
-    images:[
+    prompt: "Realistic woman in mid 40s walking through a city street in New York",
+    images: [
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/woman_40_walking_nyc/sora_1_t2v.mp4", label:"v1"},
-          {src:"examples/woman_40_walking_nyc/sora_2_t2v.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/woman_40_walking_nyc/sora_1_t2v.mp4", label: "v1" },
+          { src: "examples/woman_40_walking_nyc/sora_2_t2v.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "good",        // sum = 10+8+8+0+8 = 34
         comment: "Outstanding anime style rendering with fluid character animation.",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.9,
-          animation: 8.3,
-          creativity: 8.7
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 8,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/woman_40_walking_nyc/wan21_t2v.webp",
-        score: "good",
+        model: "Wan 2.1",
+        src: "examples/woman_40_walking_nyc/wan21_t2v.webp",
+        score: "average",     // sum = 8+8+4+0+4 = 24
         comment: "",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.0,
-          realism: 8.4,
-          animation: 8.1,
-          creativity: 7.9
+          instructionFollowing: 8,
+          consistency: 8,
+          realism: 4,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/woman_40_walking_nyc/kling20_t2v.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/woman_40_walking_nyc/kling20_t2v.mp4",
+        score: "good",        // sum = 6+8+8+0+10 = 32
         comment: "",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.0,
-          animation: 8.5,
-          creativity: 8.7
+          instructionFollowing: 6,
+          consistency: 8,
+          realism: 8,
+          animation: 0,
+          creativity: 10
         }
       },
       {
-        model:"Kling 1.6",
+        model: "Kling 1.6",
         src: "examples/woman_40_walking_nyc/kling16_t2v.mp4",
-        score: "good",
+        score: "good",        // sum = 10+8+8+0+8 = 34
         comment: "",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.0,
-          animation: 8.5,
-          creativity: 8.7
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 8,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/woman_40_walking_nyc/cogvideox15_t2v.mp4",
-        score: "average",
+        model: "CogVideoX 1.5",
+        src: "examples/woman_40_walking_nyc/cogvideox15_t2v.mp4",
+        score: "poor",     // sum = 10+2+4+0+4 = 18
         comment: "",
         metrics: {
-          instructionFollowing: 7.8,
-          consistency: 7.6,
-          realism: 7.5,
-          animation: 7.3,
-          creativity: 8.0
+          instructionFollowing: 8,
+          consistency: 2,
+          realism: 4,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/woman_40_walking_nyc/HYFramepack_t2v.mp4",
-        score: "average",
+        model: "FramePack + HunYuan",
+        src: "examples/woman_40_walking_nyc/HYFramepack_t2v.mp4",
+        score: "average",     // sum = 10+8+4+0+6 = 28
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 4,
+          animation: 0,
+          creativity: 6
         }
       }
-    ],
+    ]
   },
   {
-    prompt:"A nature scene with a blue hummingbird moving towards a flower then flying away",
-    images:[
+    prompt: "A nature scene with a blue hummingbird moving towards a flower then flying away",
+    images: [
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/humming_bird_flying/sora_1_t2v.mp4", label:"v1"},
+        model: "Sora",
+        variants: [
+          { src: "examples/humming_bird_flying/sora_1_t2v.mp4", label: "v1" }
         ],
-        score: "excellent",
+        score: "good",        // sum = 10+8+8+0+6 = 32
         comment: "Outstanding anime style rendering with fluid character animation.",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.9,
-          animation: 8.3,
-          creativity: 8.7
+          instructionFollowing: 10,
+          consistency: 8,
+          realism: 8,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/humming_bird_flying/wan21_t2v.webp",
-        score: "good",
+        model: "Wan 2.1",
+        src: "examples/humming_bird_flying/wan21_t2v.webp",
+        score: "average",     // sum = 6+8+6+0+4 = 24
         comment: "",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.0,
-          realism: 8.4,
-          animation: 8.1,
-          creativity: 7.9
+          instructionFollowing: 6,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/humming_bird_flying/kling20_t2v.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/humming_bird_flying/kling20_t2v.mp4",
+        score: "average",     // sum = 6+8+4+0+6 = 24
         comment: "",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.0,
-          realism: 8.4,
-          animation: 8.1,
-          creativity: 7.9
+          instructionFollowing: 6,
+          consistency: 8,
+          realism: 4,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/humming_bird_flying/kling16_t2v.mp4",
-        score: "average",
+        model: "Kling 1.6",
+        src: "examples/humming_bird_flying/kling16_t2v.mp4",
+        score: "excellent",   // sum = 8+10+10+0+8 = 36
         comment: "",
         metrics: {
-          instructionFollowing: 7.6,
-          consistency: 7.4,
-          realism: 8.0,
-          animation: 7.8,
-          creativity: 7.7
+          instructionFollowing: 8,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/humming_bird_flying/cogvideox15_t2v.mp4",
-        score: "average",
+        model: "CogVideoX 1.5",
+        src: "examples/humming_bird_flying/cogvideox15_t2v.mp4",
+        score: "poor",     // sum = 4+4+6+0+2 = 16
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 4,
+          consistency: 4,
+          realism: 6,
+          animation: 0,
+          creativity: 2
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/humming_bird_flying/HYFramepack_t2v.mp4",
-        score: "average",
+        model: "FramePack + HunYuan",
+        src: "examples/humming_bird_flying/HYFramepack_t2v.mp4",
+        score: "average",     // sum = 6+8+6+0+4 = 24
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 6,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 4
         }
       }
-    ],
+    ]
   },
   {
-    prompt:"A first person view of a home chef chopping onions",
-    images:[
+    prompt: "A first person view of a home chef chopping onions",
+    images: [
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/onions/sora_1_t2v.mp4", label:"v1"},
-          {src:"examples/onions/sora_2_t2v.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/onions/sora_1_t2v.mp4", label: "v1" },
+          { src: "examples/onions/sora_2_t2v.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",     // sum = 6+8+4+0+4 = 22
         comment: "Outstanding anime style rendering with fluid character animation.",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.9,
-          animation: 8.3,
-          creativity: 8.7
+          instructionFollowing: 6,
+          consistency: 8,
+          realism: 4,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/onions/wan21_t2v.webp",
-        score: "good",
+        model: "Wan 2.1",
+        src: "examples/onions/wan21_t2v.webp",
+        score: "poor",     // sum = 2+6+4+0+4 = 16
         comment: "",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.0,
-          realism: 8.4,
-          animation: 8.1,
-          creativity: 7.9
+          instructionFollowing: 2,
+          consistency: 6,
+          realism: 4,
+          animation: 0,
+          creativity: 4
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/onions/kling20_t2v.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/onions/kling20_t2v.mp4",
+        score: "good",        // sum = 6+10+10+0+8 = 34
         comment: "",
         metrics: {
-          instructionFollowing: 8.0,
-          consistency: 7.9,
-          realism: 7.8,
-          animation: 8.2,
-          creativity: 8.4
+          instructionFollowing: 6,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 8
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/onions/kling16_t2v.mp4",
-        score: "average",
+        model: "Kling 1.6",
+        src: "examples/onions/kling16_t2v.mp4",
+        score: "good",        // sum = 6+10+10+0+6 = 32
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 6,
+          consistency: 10,
+          realism: 10,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/onions/cogvideox15_t2v.mp4",
-        score: "average",
+        model: "CogVideoX 1.5",
+        src: "examples/onions/cogvideox15_t2v.mp4",
+        score: "average",     // sum = 10+4+8+0+6 = 28
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 10,
+          consistency: 4,
+          realism: 8,
+          animation: 0,
+          creativity: 6
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/onions/HYFramepack_t2v.mp4",
-        score: "average",
+        model: "FramePack + HunYuan",
+        src: "examples/onions/HYFramepack_t2v.mp4",
+        score: "average",     // sum = 4+8+6+0+4 = 22
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 6,
+          animation: 0,
+          creativity: 4
         }
       }
-    ],
+    ]
   },
   {
-    prompt:"Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
-    images:[
+    prompt: "Anime red-haired girl dodging an arrow – the arrow narrowly misses her, flying left→right",
+    images: [
       {
-        model:"Sora",
-        variants:[
-          {src:"examples/anime/sora_1_t2v.mp4", label:"v1"},
-          {src:"examples/anime/sora_2_t2v.mp4", label:"v2"}
+        model: "Sora",
+        variants: [
+          { src: "examples/anime/sora_1_t2v.mp4", label: "v1" },
+          { src: "examples/anime/sora_2_t2v.mp4", label: "v2" }
         ],
-        score: "excellent",
+        score: "average",     // sum = 4+8+0+4+4 = 20
         comment: "Outstanding anime style rendering with fluid character animation.",
         metrics: {
-          instructionFollowing: 8.4,
-          consistency: 8.2,
-          realism: 8.9,
-          animation: 8.3,
-          creativity: 8.7
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 0,
+          animation: 4,
+          creativity: 4
         }
       },
       {
-        model:"Wan 2.1",
-        src:"examples/anime/wan21_t2v.webp",
-        score: "good",
+        model: "Wan 2.1",
+        src: "examples/anime/wan21_t2v.webp",
+        score: "average",     // sum = 4+6+0+4+2 = 16
         comment: "",
         metrics: {
-          instructionFollowing: 8.2,
-          consistency: 8.0,
-          realism: 8.4,
-          animation: 8.1,
-          creativity: 7.9
+          instructionFollowing: 4,
+          consistency: 6,
+          realism: 0,
+          animation: 6,
+          creativity: 4
         }
       },
       {
-        model:"Kling 2.0",
-        src:"examples/anime/kling20_t2v.mp4",
-        score: "good",
+        model: "Kling 2.0",
+        src: "examples/anime/kling20_t2v.mp4",
+        score: "average",     // sum = 4+8+0+6+0 = 18
         comment: "",
         metrics: {
-          instructionFollowing: 8.0,
-          consistency: 7.9,
-          realism: 7.8,
-          animation: 8.2,
-          creativity: 8.4
+          instructionFollowing: 4,
+          consistency: 8,
+          realism: 0,
+          animation: 6,
+          creativity: 0
         }
       },
       {
-        model:"Kling 1.6",
-        src:"examples/anime/kling16_t2v.mp4",
-        score: "average",
+        model: "Kling 1.6",
+        src: "examples/anime/kling16_t2v.mp4",
+        score: "poor",        // sum = 2+2+0+2+2 = 8
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 2,
+          consistency: 2,
+          realism: 0,
+          animation: 2,
+          creativity: 2
         }
       },
       {
-        model:"CogVideoX 1.5",
-        src:"examples/anime/cogvideox15_t2v.mp4",
-        score: "average",
+        model: "CogVideoX 1.5",
+        src: "examples/anime/cogvideox15_t2v.mp4",
+        score: "poor",     // sum = 2+6+0+4+4 = 16
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 2,
+          consistency: 6,
+          realism: 0,
+          animation: 4,
+          creativity: 4
         }
       },
       {
-        model:"FramePack + HunYuan",
-        src:"examples/anime/HYFramepack_t2v.mp4",
-        score: "average",
+        model: "FramePack + HunYuan",
+        src: "examples/anime/HYFramepack_t2v.mp4",
+        score: "poor",     // sum = 4+6+0+4+2 = 16
         comment: "",
         metrics: {
-          instructionFollowing: 7.5,
-          consistency: 7.7,
-          realism: 7.3,
-          animation: 7.4,
-          creativity: 7.8
+          instructionFollowing: 4,
+          consistency: 6,
+          realism: 0,
+          animation: 4,
+          creativity: 2
         }
       }
-    ],
-  },
+    ]
+  }
 ];
-
 /*───────────────────────────────────────────
  2)  APPLICATION CODE
 ───────────────────────────────────────────*/
@@ -1676,7 +1674,13 @@ class MediaShowdown{
     tbody.innerHTML = '';
 
     this.sortedModels.forEach(([modelName, scores]) => {
-      const average = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.values(scores).length;
+      //const average = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.values(scores).length;
+      const average = (
+        scores.instructionFollowing +
+        scores.consistency +
+        scores.creativity +
+        (3 * scores.realism + 1 * scores.animation) / 4
+      ) / 4;
 
       const row = document.createElement('tr');
       row.innerHTML = `
@@ -1783,52 +1787,53 @@ class MediaShowdown{
   }
 
   /* ── Metrics Toggle Functions ── */
-  createMetricsSection(modelName) {
-    const scores = modelScores[modelName];
-    if (!scores) return '';
+  createMetricsSection(modelName, exampleMetrics) { // Added exampleMetrics parameter
+  // Use exampleMetrics if provided, otherwise fall back to modelScores
+  const scores = exampleMetrics || modelScores[modelName];
+  if (!scores) return '';
 
-    const metricLabels = {
-      instructionFollowing: 'Instruction Following',
-      consistency: 'Consistency',
-      realism: 'Realism',
-      animation: 'Animation Quality',
-      creativity: 'Creativity'
-    };
+  const metricLabels = {
+    instructionFollowing: 'Instruction Following',
+    consistency: 'Consistency',
+    realism: 'Realism',
+    animation: 'Animation Quality',
+    creativity: 'Creativity'
+  };
 
-    const metricsHtml = Object.entries(scores).map(([key, value]) => {
-      const scoreClass = this.getScoreClass(value);
-      return `
-        <div class="metric-item">
-          <span class="metric-name">${metricLabels[key]}</span>
-          <div class="metric-score">
-            <span class="metric-value score-${scoreClass}">${this.formatScore(value)}</span>
-            <div class="metric-bar">
-              <div class="metric-bar-fill score-fill ${scoreClass}" style="width: ${value * 10}%"></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
+  const metricsHtml = Object.entries(scores).map(([key, value]) => {
+    const scoreClass = this.getScoreClass(value);
     return `
-      <div class="metrics-toggle" onclick="this.parentElement.toggleMetrics(this)">
-        <div class="metrics-toggle-text">
-          <div class="bar-chart-icon">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
+      <div class="metric-item">
+        <span class="metric-name">${metricLabels[key]}</span>
+        <div class="metric-score">
+          <span class="metric-value score-${scoreClass}">${this.formatScore(value)}</span>
+          <div class="metric-bar">
+            <div class="metric-bar-fill score-fill ${scoreClass}" style="width: ${value * 10}%"></div>
           </div>
-          <span>Detailed Metrics</span>
         </div>
-        <div class="toggle-arrow">▼</div>
-      </div>
-      <div class="metrics-details">
-        ${metricsHtml}
       </div>
     `;
-  }
+  }).join('');
+
+  return `
+    <div class="metrics-toggle" onclick="this.parentElement.toggleMetrics(this)">
+      <div class="metrics-toggle-text">
+        <div class="bar-chart-icon">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <span>Detailed Metrics</span>
+      </div>
+      <div class="toggle-arrow">▼</div>
+    </div>
+    <div class="metrics-details">
+      ${metricsHtml}
+    </div>
+  `;
+}
 
   /* ── Content build ── */
   buildContent(){
@@ -1896,8 +1901,8 @@ class MediaShowdown{
           scoring.appendChild(comment);
 
           // Add metrics section if model has scores
-          if (modelScores[img.model]) {
-            const metricsHtml = this.createMetricsSection(img.model);
+          if (img.metrics) { // Changed from modelScores[img.model] to img.metrics
+            const metricsHtml = this.createMetricsSection(img.model, img.metrics); // Pass img.metrics
             scoring.innerHTML += metricsHtml;
 
             // Add toggle functionality
@@ -1914,7 +1919,6 @@ class MediaShowdown{
               }
             };
           }
-          
           fig.appendChild(scoring);
         } else {
           // Add invisible placeholder for reference images
@@ -2008,8 +2012,8 @@ class MediaShowdown{
         scoring.appendChild(comment);
 
         // Add metrics section if model has scores
-        if (modelScores[img.model]) {
-          const metricsHtml = this.createMetricsSection(img.model);
+        if (img.metrics) { // Changed from modelScores[img.model] to img.metrics
+          const metricsHtml = this.createMetricsSection(img.model, img.metrics); // Pass img.metrics
           scoring.innerHTML += metricsHtml;
 
           // Add toggle functionality

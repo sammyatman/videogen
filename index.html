@@ -64,17 +64,6 @@ header h1{
 }
 .tab-button.active .tab-badge{background:var(--accent);color:white}
 
-.search-container{margin-bottom:1rem;position:relative}
-#searchInput{
-  width:100%;max-width:400px;padding:.75rem 1rem .75rem 2.5rem;
-  background:var(--bg-light);border:1px solid var(--border);border-radius:12px;
-  color:var(--fg);font-size:.9rem;transition:.2s
-}
-#searchInput:focus{outline:none;border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-.search-icon{position:absolute;left:.75rem;top:50%;
-  transform:translateY(-50%);color:var(--fg-muted);pointer-events:none}
-
 nav{display:flex;flex-wrap:wrap;gap:.5rem;max-height:200px;overflow-y:auto}
 nav a{
   padding:.5rem 1rem;background:var(--bg-light);
@@ -87,14 +76,6 @@ nav a:hover{background:var(--surface-hover);border-color:var(--accent);
 nav a.hidden{display:none}
 
 main{max-width:1400px;margin:0 auto;padding:2rem}
-
-.stats{display:flex;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
-.stat{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:1rem;text-align:center;min-width:120px
-}
-.stat-number{font-size:1.5rem;font-weight:700;color:var(--accent)}
-.stat-label{font-size:.8rem;color:var(--fg-muted);text-transform:uppercase}
 
 /* ───── Model Scoring Section ───── */
 .scoring-section{
@@ -420,7 +401,6 @@ figcaption{
   header h1{font-size:1.5rem}
   main{padding:1rem}
   .grid{grid-template-columns:1fr;gap:1rem}
-  .stats{justify-content:center}
   nav{max-height:150px}
   .scoring-section{padding:1rem}
   .scoring-table{font-size:.8rem}
@@ -440,8 +420,6 @@ figcaption{
    animation-iteration-count:1!important;transition-duration:0.01ms!important}
   html{scroll-behavior:auto}
 }
-nav a:focus,figure:focus,#searchInput:focus,.tab-button:focus{
-  outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -461,33 +439,11 @@ nav a:focus,figure:focus,#searchInput:focus,.tab-button:focus{
           <span class="tab-badge" id="t2vCount">0</span>
         </button>
       </div>
-
-      <div class="search-container">
-        <div class="search-icon">🔍</div>
-        <input id="searchInput" type="text" placeholder="Search prompts…" aria-label="Search prompts"/>
-      </div>
-
-      <nav id="nav" role="navigation" aria-label="Prompt navigation"></nav>
     </div>
   </div>
 </header>
 
 <main>
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-number" id="totalPrompts">0</div>
-      <div class="stat-label">Prompts</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number" id="totalMedia">0</div>
-      <div class="stat-label">Media</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number" id="totalModels">0</div>
-      <div class="stat-label">Models</div>
-    </div>
-  </div>
-
   <!-- ───── Model Scoring Section ───── -->
   <div class="scoring-section">
     <h3 class="scoring-title">Model Performance Scores</h3>
@@ -516,24 +472,10 @@ nav a:focus,figure:focus,#searchInput:focus,.tab-button:focus{
   <!-- ───── Tab Contents ───── -->
   <div class="tab-content active" id="i2v-content">
     <div id="i2v-examples"></div>
-    <div class="no-results" id="i2vNoResults">
-      <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
-      <div>No I2V prompts match your search</div>
-      <div style="font-size:.9rem;margin-top:.5rem;color:var(--fg-muted)">
-        Try adjusting your search terms
-      </div>
-    </div>
   </div>
 
   <div class="tab-content" id="t2v-content">
     <div id="t2v-examples"></div>
-    <div class="no-results" id="t2vNoResults">
-      <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
-      <div>No T2V prompts match your search</div>
-      <div style="font-size:.9rem;margin-top:.5rem;color:var(--fg-muted)">
-        Try adjusting your search terms
-      </div>
-    </div>
   </div>
 </main>
 
@@ -1289,7 +1231,6 @@ const t2vExamples = [
         model:"Sora",
         variants:[
           {src:"examples/humming_bird_flying/sora_1_t2v.mp4", label:"v1"},
-          {src:"examples/humming_bird_flying/sora_2_t2v.mp4", label:"v2"}
         ],
         score: "excellent",
         comment: "Outstanding anime style rendering with fluid character animation.",
@@ -1561,9 +1502,7 @@ class MediaShowdown{
   /* ── Init ── */
   init(){
     this.listeners();
-    this.updateStats();
     this.buildScoringTable();
-    this.buildNav();
     this.buildContent();
     this.updateTabCounts();
   }
@@ -1573,10 +1512,6 @@ class MediaShowdown{
     document.querySelectorAll('.tab-button').forEach(btn => {
       btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
     });
-
-    /* search */
-    document.getElementById('searchInput')
-      .addEventListener('input',(e)=>this.handleSearch(e.target.value));
 
     /* modal close */
     document.querySelector('.close')
@@ -1618,7 +1553,6 @@ class MediaShowdown{
     
     // Update navigation and content for current tab
     this.updateNav();
-    this.toggleNoResults();
   }
 
   updateTabCounts() {
@@ -1636,32 +1570,6 @@ class MediaShowdown{
 
   slugify(txt){return txt.toLowerCase()
         .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
-
-  /* ── Statistics ── */
-  updateStats(){
-    const totalI2V = this.i2vExamples.length;
-    const totalT2V = this.t2vExamples.length;
-    const totalPrompts = totalI2V + totalT2V;
-    
-    let totalMedia = 0;
-    const models = new Set();
-    
-    [...this.i2vExamples, ...this.t2vExamples].forEach(ex=>{
-      ex.images.forEach(img=>{
-        if(img.variants) {
-          totalMedia += img.variants.length;
-          models.add(img.model);
-        } else if (img.model !== "Reference Image") {
-          totalMedia += 1;
-          models.add(img.model);
-        }
-      });
-    });
-
-    document.getElementById('totalPrompts').textContent = totalPrompts;
-    document.getElementById('totalMedia').textContent = totalMedia;
-    document.getElementById('totalModels').textContent = models.size;
-  }
 
   /* ── Scoring Table ── */
   getScoreClass(score) {
@@ -1814,7 +1722,6 @@ class MediaShowdown{
 
     this.updateNav();
     this.updateContent();
-    this.toggleNoResults();
   }
 
   updateNav(){
@@ -1831,43 +1738,6 @@ class MediaShowdown{
       const visible = this.getCurrentExamples().some(ex=>this.slugify(ex.prompt)===sec.id);
       sec.classList.toggle('hidden',!visible);
     });
-  }
-
-  toggleNoResults(){
-    const noResultsId = this.currentTab === 'i2v' ? 'i2vNoResults' : 't2vNoResults';
-    document.getElementById(noResultsId)
-      .classList.toggle('visible', this.getCurrentExamples().length === 0);
-  }
-
-  /* ── Navigation build ── */
-  buildNav(){
-    const nav = document.getElementById('nav');
-    
-    // Clear existing nav
-    nav.innerHTML = '';
-    
-    // Add I2V examples
-    this.i2vExamples.forEach(ex=>{
-      const a = document.createElement('a');
-      a.href = '#' + this.slugify(ex.prompt);
-      a.textContent = ex.prompt.length > 50 ? ex.prompt.slice(0,47) + '…' : ex.prompt;
-      a.setAttribute('aria-label',`Jump to I2V: ${ex.prompt}`);
-      a.style.borderLeft = '3px solid #3b82f6'; // Blue for I2V
-      nav.appendChild(a);
-    });
-    
-    // Add T2V examples
-    this.t2vExamples.forEach(ex=>{
-      const a = document.createElement('a');
-      a.href = '#' + this.slugify(ex.prompt);
-      a.textContent = ex.prompt.length > 50 ? ex.prompt.slice(0,47) + '…' : ex.prompt;
-      a.setAttribute('aria-label',`Jump to T2V: ${ex.prompt}`);
-      a.style.borderLeft = '3px solid #10b981'; // Green for T2V
-      nav.appendChild(a);
-    });
-    
-    // Initial nav visibility update
-    this.updateNav();
   }
 
   /* ── Carousel Management ── */

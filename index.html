@@ -438,37 +438,15 @@ figcaption{
           Text-to-Video 
           <span class="tab-badge" id="t2vCount">0</span>
         </button>
+        <button class="tab-button" data-tab="scores">
+            Model Scores
+        </button>
       </div>
     </div>
   </div>
 </header>
 
 <main>
-  <!-- ───── Model Scoring Section ───── -->
-  <div class="scoring-section">
-    <h3 class="scoring-title">Model Performance Scores</h3>
-    <p class="scoring-subtitle">Comparative evaluation across key video generation metrics (scored 1-10)</p>
-
-    <div class="scoring-table">
-      <table id="scoringTable">
-        <thead>
-          <tr>
-            <th>Model</th>
-            <th>Instruction Following</th>
-            <th>Consistency</th>
-            <th>Realism</th>
-            <th>Animation Quality</th>
-            <th>Creativity</th>
-            <th>Average Score</th>
-          </tr>
-        </thead>
-        <tbody id="scoringTableBody">
-          <!-- Populated by JavaScript -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <!-- ───── Tab Contents ───── -->
   <div class="tab-content active" id="i2v-content">
     <div id="i2v-examples"></div>
@@ -476,6 +454,32 @@ figcaption{
 
   <div class="tab-content" id="t2v-content">
     <div id="t2v-examples"></div>
+  </div>
+  <!-- ───── Model Scoring Section ───── -->
+  <div class="tab-content" id="scores-content">
+    <div class="scoring-section">
+      <h3 class="scoring-title">Model Performance Scores</h3>
+      <p class="scoring-subtitle">Comparative evaluation across key video generation metrics (scored 1-10)</p>
+
+      <div class="scoring-table">
+        <table id="scoringTable">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Instruction Following</th>
+              <th>Consistency</th>
+              <th>Realism</th>
+              <th>Animation Quality</th>
+              <th>Creativity</th>
+              <th>Average Score</th>
+            </tr>
+          </thead>
+          <tbody id="scoringTableBody">
+            <!-- Populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </main>
 
